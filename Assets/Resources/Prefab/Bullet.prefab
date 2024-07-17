@@ -234,7 +234,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   flarePrefab: {fileID: 100006, guid: 584d0d53e45dc624d86724be4773d63d, type: 3}
-  audioClip: {fileID: 8300000, guid: 3988c7241ff434c2a900f22726ee7a08, type: 3}
+  clip_wall: {fileID: 8300000, guid: dac1bc4242795824e8392d40c5811458, type: 3}
+  clip_barrel: {fileID: 8300000, guid: 486575db41153ec4c89cfbd176d9e4c0, type: 3}
 --- !u!1001 &6603482652489276617
 PrefabInstance:
   m_ObjectHideFlags: 0

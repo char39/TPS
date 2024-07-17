@@ -27,7 +27,8 @@ public class Player : MonoBehaviour
     private Animation ani;
     private float h, v, r;
 
-    [SerializeField]private GameObject bulletPrefab;
+    //[SerializeField]private GameObject bulletPrefab;
+    private bool isFire = false;
     private Transform firePos;
     private AudioSource source;
     [SerializeField]private AudioClip audioClip;
@@ -48,7 +49,7 @@ public class Player : MonoBehaviour
     void Update()
     {
         PlayerMove_All();
-        PlayerGunFire();
+        StartCoroutine(PlayerGunFire());
     }
 
     private void PlayerMove_All()   // 플레이어의 움직이는 모든 것
@@ -111,12 +112,24 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void PlayerGunFire()
+    IEnumerator PlayerGunFire()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButton(0) && !isFire)
         {
-            Instantiate(bulletPrefab, firePos.position, firePos.rotation);
-            source.PlayOneShot(audioClip, 1.0f);
+            //Instantiate(bulletPrefab, firePos.position, firePos.rotation);
+            // 오브젝트 풀링 방식을 아래에 작성함.
+            isFire = true;
+            var bullets = ObjectPoolingManager_script.poolingManager.GetBulletPool();   // 비활성화 된 몇 번째 총알 반환
+            if (bullets != null)    // 총알이 10개 다 활성화 되어있으면 작동X
+            {
+                bullets.transform.position = firePos.position;
+                bullets.transform.rotation = firePos.rotation;
+                bullets.SetActive(true);
+                source.PlayOneShot(audioClip, 1.0f);
+                yield return new WaitForSeconds(0.1f);
+            }
+            isFire = false;
         }
+        yield return null;
     }
 }

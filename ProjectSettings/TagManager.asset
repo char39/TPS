@@ -8,6 +8,8 @@ TagManager:
   - E_BULLET
   - Bullet
   - FirePos
+  - Wall
+  - Barrel
   layers:
   - Default
   - TransparentFX
@@ -15,8 +17,8 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
+  - Player
+  - Barrel
   - 
   - 
   - 
