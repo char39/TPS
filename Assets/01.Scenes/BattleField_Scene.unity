@@ -167,8 +167,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletPrefab: {fileID: 0}
+  e_bulletPrefab: {fileID: 0}
   maxPool: 10
+  maxPool_e: 10
   bulletPoolList: []
+  e_bulletPoolList: []
 --- !u!1 &9049285
 GameObject:
   m_ObjectHideFlags: 0
@@ -484,6 +487,50 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   color: {r: 0, g: 0, b: 0, a: 1}
   radius: 0.3
+--- !u!1 &118205651
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 118205653}
+  - component: {fileID: 118205652}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &118205652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 118205651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0904205d38a1645fba498617778b18b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &118205653
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 118205651}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -25, y: 2.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &124648981
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1277,6 +1324,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: w_rifle02
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 03cd26eddfc134a6dbc4d40f15965660, type: 3}
+      propertyPath: m_Layer
+      value: 12
+      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 03cd26eddfc134a6dbc4d40f15965660, type: 3}
       propertyPath: m_LocalScale.x
       value: 1
@@ -1437,7 +1488,7 @@ GameObject:
   m_Component:
   - component: {fileID: 717073856}
   - component: {fileID: 717073857}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: E_FirePos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2287,8 +2338,32 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 100006, guid: a1172801cc64d474bb0e48c03b543a5a, type: 3}
+      propertyPath: m_Layer
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 100008, guid: a1172801cc64d474bb0e48c03b543a5a, type: 3}
+      propertyPath: m_Layer
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 100020, guid: a1172801cc64d474bb0e48c03b543a5a, type: 3}
+      propertyPath: m_Layer
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 100030, guid: a1172801cc64d474bb0e48c03b543a5a, type: 3}
+      propertyPath: m_Layer
+      value: 12
+      objectReference: {fileID: 0}
     - target: {fileID: 100032, guid: a1172801cc64d474bb0e48c03b543a5a, type: 3}
       propertyPath: m_Name
+      value: Enemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 100032, guid: a1172801cc64d474bb0e48c03b543a5a, type: 3}
+      propertyPath: m_Layer
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 100032, guid: a1172801cc64d474bb0e48c03b543a5a, type: 3}
+      propertyPath: m_TagString
       value: Enemy
       objectReference: {fileID: 0}
     - target: {fileID: 400032, guid: a1172801cc64d474bb0e48c03b543a5a, type: 3}
@@ -2357,6 +2432,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100032, guid: a1172801cc64d474bb0e48c03b543a5a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2125863815}
+    - targetCorrespondingSourceObject: {fileID: 100032, guid: a1172801cc64d474bb0e48c03b543a5a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2125863816}
+    - targetCorrespondingSourceObject: {fileID: 100032, guid: a1172801cc64d474bb0e48c03b543a5a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2125863817}
   m_SourcePrefab: {fileID: 100100000, guid: a1172801cc64d474bb0e48c03b543a5a, type: 3}
 --- !u!1 &1498391836 stripped
 GameObject:
@@ -3137,7 +3218,7 @@ NavMeshAgent:
   m_AgentTypeID: 0
   m_Radius: 0.65
   m_Speed: 7
-  m_Acceleration: 30
+  m_Acceleration: 20
   avoidancePriority: 50
   m_AngularSpeed: 120
   m_StoppingDistance: 0
@@ -3163,6 +3244,39 @@ MonoBehaviour:
   wayPointList: []
   nextIndex: 0
   agent: {fileID: 0}
+--- !u!114 &2125863816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1498391836}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4ba3831596734b27939dc78efc62668, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  state: 0
+  isDie: 0
+--- !u!114 &2125863817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1498391836}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a52e4a5f10df44bd1bbd7f7357ab3f48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyFireClip: {fileID: 0}
+  animator: {fileID: 0}
+  playerTr: {fileID: 0}
+  enemyTr: {fileID: 0}
+  firePos: {fileID: 0}
+  isFire: 0
+  isReload: 0
 --- !u!1001 &1202792532685762527
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3232,6 +3346,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Wall
       objectReference: {fileID: 0}
+    - target: {fileID: 5283023945542581136, guid: 38825d00a09411b4a939650ccd769026, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7846680302927228295, guid: 38825d00a09411b4a939650ccd769026, type: 3}
       propertyPath: m_LocalPosition.x
       value: -25
@@ -3288,10 +3406,11 @@ SceneRoots:
   m_Roots:
   - {fileID: 963194228}
   - {fileID: 705507995}
-  - {fileID: 665329872}
   - {fileID: 334645914}
   - {fileID: 4195701}
   - {fileID: 618971727}
   - {fileID: 722726933}
   - {fileID: 1672332300}
+  - {fileID: 665329872}
   - {fileID: 1498391835}
+  - {fileID: 118205653}

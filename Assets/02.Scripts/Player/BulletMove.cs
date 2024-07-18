@@ -14,7 +14,6 @@ public class BulletMove : MonoBehaviour
         speed = 1000f;
         rb = GetComponent<Rigidbody>();
         //gameObject.SetActive(false);
-        Invoke("BulletDisable", 3.0f);
     }
     void BulletDisable()
     {
@@ -22,6 +21,7 @@ public class BulletMove : MonoBehaviour
     }
     private void OnEnable() // 옵젝 켜질 때마다 실행
     {
+        Invoke("BulletDisable", 3.0f);
         rb.AddForce(transform.forward * speed);
     }
     private void OnDisable()

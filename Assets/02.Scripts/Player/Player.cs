@@ -34,6 +34,7 @@ public class Player : MonoBehaviour
     #region vars 2
 
     private bool isFire = false;
+    private bool isReload = false;
     private int fireCount;
     private Transform firePos;
     private AudioSource source;
@@ -133,12 +134,14 @@ public class Player : MonoBehaviour
     {
         if (Input.GetMouseButton(0) && !isFire && !isRun)
         {
-            if (fireCount == 10)
+            if (fireCount == 10 && !isReload)
             {
+                isReload = true;
                 yield return new WaitForSeconds(1.0f);
                 fireCount = 0;
+                isReload = false;
             }
-            else if (fireCount < 10)
+            else if (fireCount < 10 && !isReload)
             {
                 //Instantiate(bulletPrefab, firePos.position, firePos.rotation);
                 // 오브젝트 풀링 방식을 아래에 작성함.

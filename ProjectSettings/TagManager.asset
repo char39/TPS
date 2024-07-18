@@ -10,6 +10,8 @@ TagManager:
   - FirePos
   - Wall
   - Barrel
+  - Enemy
+  - E_Bullet
   layers:
   - Default
   - TransparentFX
@@ -23,8 +25,8 @@ TagManager:
   - Wall
   - Floor
   - Effect
-  - 
-  - 
+  - Enemy
+  - E_Bullet
   - 
   - 
   - 

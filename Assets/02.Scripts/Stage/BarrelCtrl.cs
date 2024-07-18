@@ -14,6 +14,7 @@ public class BarrelCtrl : MonoBehaviour
     [SerializeField]private int hitCount = 0;
     [SerializeField]private AudioClip clip_explo;
     private readonly string bulletTag = "Bullet";
+    private readonly string bulletTag_E = "E_Bullet";
 
     void Start()
     {
@@ -26,12 +27,13 @@ public class BarrelCtrl : MonoBehaviour
 
     private void OnCollisionEnter(Collision col)
     {
-        if (col.gameObject.CompareTag(bulletTag))
+        if (col.gameObject.CompareTag(bulletTag) || col.gameObject.CompareTag(bulletTag_E))
         {
             hitCount++;
             if (hitCount == 5)
             {
                 ExplosionBarrel();
+                StartCoroutine(GameManager.instance.CameraShake());
             }
         }
     }
@@ -68,4 +70,6 @@ public class BarrelCtrl : MonoBehaviour
             }
         }
     }
+    
+
 }
