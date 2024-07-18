@@ -15,6 +15,8 @@ public class PlayerAnimation
 
 public class Player : MonoBehaviour
 {
+    #region vars 1
+
     public PlayerAnimation playerAnimation;
     private float moveSpeed = 5f;
     private float moveSpeedRun = 7.5f;
@@ -27,11 +29,18 @@ public class Player : MonoBehaviour
     private Animation ani;
     private float h, v, r;
 
-    //[SerializeField]private GameObject bulletPrefab;
+    #endregion
+
+    #region vars 2
+
     private bool isFire = false;
+    private int fireCount;
     private Transform firePos;
     private AudioSource source;
     [SerializeField]private AudioClip audioClip;
+    public bool isRun;
+
+    #endregion
 
     void Start()
     {
@@ -44,6 +53,8 @@ public class Player : MonoBehaviour
 
         firePos = GameObject.FindWithTag("FirePos").transform;
         source = GetComponent<AudioSource>();
+        fireCount = 0;
+        isRun = false;
     }
 
     void Update()
@@ -67,9 +78,15 @@ public class Player : MonoBehaviour
     private void MoveRun()
     {
         if (Input.GetKey(KeyCode.LeftShift) && (Mathf.Abs(h) > 0.1 || Mathf.Abs(v) > 0.1))
+        {
             finalMoveSpeed = moveSpeedRun;
+            isRun = true;
+        }
         else
+        {
             finalMoveSpeed = moveSpeed;
+            isRun = false;
+        }
     }
     private void MoveAni()  // 애니메이션만 재생
     {
@@ -114,21 +131,30 @@ public class Player : MonoBehaviour
 
     IEnumerator PlayerGunFire()
     {
-        if (Input.GetMouseButton(0) && !isFire)
+        if (Input.GetMouseButton(0) && !isFire && !isRun)
         {
-            //Instantiate(bulletPrefab, firePos.position, firePos.rotation);
-            // 오브젝트 풀링 방식을 아래에 작성함.
-            isFire = true;
-            var bullets = ObjectPoolingManager_script.poolingManager.GetBulletPool();   // 비활성화 된 몇 번째 총알 반환
-            if (bullets != null)    // 총알이 10개 다 활성화 되어있으면 작동X
+            if (fireCount == 10)
             {
-                bullets.transform.position = firePos.position;
-                bullets.transform.rotation = firePos.rotation;
-                bullets.SetActive(true);
-                source.PlayOneShot(audioClip, 1.0f);
-                yield return new WaitForSeconds(0.1f);
+                yield return new WaitForSeconds(1.0f);
+                fireCount = 0;
             }
-            isFire = false;
+            else if (fireCount < 10)
+            {
+                //Instantiate(bulletPrefab, firePos.position, firePos.rotation);
+                // 오브젝트 풀링 방식을 아래에 작성함.
+                fireCount++;
+                isFire = true;
+                var bullets = ObjectPoolingManager_script.poolingManager.GetBulletPool();   // 비활성화 된 몇 번째 총알 반환
+                if (bullets != null)    // 총알이 10개 다 활성화 되어있으면 작동X
+                {
+                    bullets.transform.position = firePos.position;
+                    bullets.transform.rotation = firePos.rotation;
+                    bullets.SetActive(true);
+                    source.PlayOneShot(audioClip, 1.0f);
+                    yield return new WaitForSeconds(0.1f);
+                }
+                isFire = false;
+            }
         }
         yield return null;
     }

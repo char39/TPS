@@ -9,8 +9,8 @@ public class MyGizmo : MonoBehaviour
 
     void Start()
     {
-        color = Color.red;
-        radius = 0.1f;    
+        //color = Color.red;
+        //radius = 0.05f;    
     }
 
     private void OnDrawGizmos()
