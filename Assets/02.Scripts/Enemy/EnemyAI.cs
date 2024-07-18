@@ -50,8 +50,9 @@ public class EnemyAI : MonoBehaviour
     {
         while (!isDie)
         {
-            if (state == State.DIE) yield break;    // 열거형 상수 State 값이 DIE면 이 함수 종료.
-                float dist = (playerTr.position - enemyTr.position).magnitude;
+            if (state == State.DIE)
+                yield break;    // 열거형 상수 State 값이 DIE면 이 함수 종료.
+            float dist = (playerTr.position - enemyTr.position).magnitude;
             if (dist <= attackDist)
                 state = State.ATTACK;
             else if (dist <= traceDist)
