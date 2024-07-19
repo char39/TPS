@@ -7,17 +7,22 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     private Camera mainCamera;
     private Transform mainCam_tr;
-    private Transform mainCam_tr_startPos;
+    public bool isGameOver = false;
 
-    void Start()
+    void Awake()
     {
-        instance = this;
+        if (instance == null)
+            instance = this;
+        else if (instance != this)
+            Destroy(gameObject);
+        DontDestroyOnLoad(gameObject);
         mainCamera = GameObject.FindWithTag("MainCamera").GetComponent<Camera>();
         mainCam_tr = mainCamera.transform;
     }
 
     public IEnumerator CameraShake()
     {
+        mainCam_tr = mainCamera.transform;
         for (int i = 30; i > 0; i--)
         {
             float ran = Random.Range(-0.1f, 0.1f) * i * 0.1f;

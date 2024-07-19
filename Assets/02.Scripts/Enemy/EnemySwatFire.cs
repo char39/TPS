@@ -2,12 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyFire : MonoBehaviour
+public class EnemySwatFire : MonoBehaviour
 {
-    [SerializeField] private AudioClip enemyFireClip;
+    [SerializeField] private AudioClip enemySwatFireClip;
     [SerializeField] private Animator animator;
     [SerializeField] private Transform playerTr;
-    [SerializeField] private Transform enemyTr;
+    [SerializeField] private Transform enemySwatTr;
     [SerializeField] private Transform firePos;
     private readonly int hashFire = Animator.StringToHash("FireTrigger");   // Animator의 FireTrigger이란 이름의 Parameter
     private readonly int hashReload = Animator.StringToHash("ReloadTrigger");
@@ -28,11 +28,11 @@ public class EnemyFire : MonoBehaviour
 
     void Start()
     {
-        enemyFireClip = Resources.Load<AudioClip>("Audio/p_m4_1");
+        enemySwatFireClip = Resources.Load<AudioClip>("Audio/p_m4_1");
         animator = GetComponent<Animator>();
         playerTr = GameObject.FindGameObjectWithTag("Player").transform;
-        enemyTr = GetComponent<Transform>();
-        firePos = transform.GetChild(3).GetChild(0).GetChild(0).transform;
+        enemySwatTr = GetComponent<Transform>();
+        firePos = transform.GetChild(2).GetChild(0).GetChild(0).transform;
         curBullet = maxBullet;
         reloadws = new WaitForSeconds(reloadTime);
         reloadClip = Resources.Load<AudioClip>("Audio/p_reload");
@@ -49,9 +49,9 @@ public class EnemyFire : MonoBehaviour
                 StartCoroutine(Fire());
                 nextFire = Time.time + fireRate + Random.Range(0.0f, 0.3f);
             }
-            Vector3 playerLooknormal = playerTr.position - enemyTr.position;
+            Vector3 playerLooknormal = playerTr.position - enemySwatTr.position;
             Quaternion rot = Quaternion.LookRotation(playerLooknormal);
-            enemyTr.rotation = Quaternion.Slerp(enemyTr.rotation, rot, damping * Time.deltaTime);
+            enemySwatTr.rotation = Quaternion.Slerp(enemySwatTr.rotation, rot, damping * Time.deltaTime);
         }    
     }
     
@@ -72,7 +72,7 @@ public class EnemyFire : MonoBehaviour
                 bullets.transform.rotation = firePos.rotation;
                 bullets.SetActive(true);
                 animator.SetTrigger(hashFire);
-                SoundManager.S_Instance.PlaySound(firePos.position, enemyFireClip);
+                SoundManager.S_Instance.PlaySound(firePos.position, enemySwatFireClip);
                 StartCoroutine(ShowMuzzleFlash());
                 yield return new WaitForSeconds(0.1f);
             }

@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: af19cc6a5ba952b4ba9d20ce847a2058
 ModelImporter:
-  serializedVersion: 19301
+  serializedVersion: 22200
   internalIDToNameTable:
   - first:
       74: -203655887218126122
@@ -27,6 +27,7 @@ ModelImporter:
     bakeSimulation: 0
     resampleCurves: 1
     optimizeGameObjects: 1
+    removeConstantScaleCurves: 0
     motionNodeName: 
     rigImportErrors: 
     rigImportWarnings: 
@@ -53,27 +54,35 @@ ModelImporter:
     addColliders: 0
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
+    importPhysicalCameras: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
     importLights: 1
+    nodeNameCollisionStrategy: 0
     fileIdsGeneration: 2
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
     keepQuads: 0
     weldVertices: 1
+    bakeAxisConversion: 0
     preserveHierarchy: 0
     skinWeightsMode: 0
     maxBonesPerVertex: 4
     minBoneWeight: 0.001
+    optimizeBones: 1
     meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 0
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 1
+    strictVertexDataChecks: 0
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
@@ -646,8 +655,7 @@ ModelImporter:
     - name: swat:LeftHandMiddle1
       parentName: swat:LeftHand
       position: {x: -0.12064365, y: 4.784784e-10, z: 0.000000009775969}
-      rotation: {x: 0.0000000149011585, y: -0.00000004469573, z: 0.000000029813958,
-        w: 1}
+      rotation: {x: 0.0000000149011585, y: -0.00000004469573, z: 0.000000029813958, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: swat:LeftHandMiddle2
       parentName: swat:LeftHandMiddle1
@@ -687,20 +695,17 @@ ModelImporter:
     - name: swat:LeftHandRing1
       parentName: swat:LeftHand
       position: {x: -0.11776862, y: -0.00053623033, z: -0.026612563}
-      rotation: {x: 0.000000029802319, y: -0.000000029798443, z: 0.000000014908917,
-        w: 1}
+      rotation: {x: 0.000000029802319, y: -0.000000029798443, z: 0.000000014908917, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: swat:LeftHandRing2
       parentName: swat:LeftHandRing1
       position: {x: -0.0626198, y: -0.000000001698851, z: 0.0000000013255615}
-      rotation: {x: -0.000000029802317, y: 0.000000029790682, z: -0.000000044711232,
-        w: 1}
+      rotation: {x: -0.000000029802317, y: 0.000000029790682, z: -0.000000044711232, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: swat:LeftHandRing3
       parentName: swat:LeftHandRing2
       position: {x: -0.0427018, y: 0.0000000026593538, z: 0.000000003449154}
-      rotation: {x: 0.00000005960464, y: -0.000000014897281, z: 0.000000014905034,
-        w: 1}
+      rotation: {x: 0.00000005960464, y: -0.000000014897281, z: 0.000000014905034, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: swat:LeftHandRing4
       parentName: swat:LeftHandRing3
@@ -710,20 +715,17 @@ ModelImporter:
     - name: swat:LeftHandPinky1
       parentName: swat:LeftHand
       position: {x: -0.11293287, y: -0.0024250185, z: -0.050811753}
-      rotation: {x: 0.00000002980232, y: -0.000000014905037, z: -0.000000014897282,
-        w: 1}
+      rotation: {x: 0.00000002980232, y: -0.000000014905037, z: -0.000000014897282, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: swat:LeftHandPinky2
       parentName: swat:LeftHandPinky1
       position: {x: -0.042277448, y: 0.0000000013667502, z: 0.0000000022168067}
-      rotation: {x: 0.000000029802319, y: -0.000000014897281, z: 0.000000014905039,
-        w: 1}
+      rotation: {x: 0.000000029802319, y: -0.000000014897281, z: 0.000000014905039, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: swat:LeftHandPinky3
       parentName: swat:LeftHandPinky2
       position: {x: -0.032329947, y: 8.1658805e-11, z: 7.31705e-10}
-      rotation: {x: -0.00000005960464, y: -0.000000029810074, z: -0.000000029794561,
-        w: 1}
+      rotation: {x: -0.00000005960464, y: -0.000000029810074, z: -0.000000029794561, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: swat:LeftHandPinky4
       parentName: swat:LeftHandPinky3
@@ -783,8 +785,7 @@ ModelImporter:
     - name: swat:RightHandIndex3
       parentName: swat:RightHandIndex2
       position: {x: 0.038933247, y: 0.0000000010937016, z: 0.000000004219784}
-      rotation: {x: 0.000000029802326, y: 0.000000014905343, z: 0.000000029800233,
-        w: 1}
+      rotation: {x: 0.000000029802326, y: 0.000000014905343, z: 0.000000029800233, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: swat:RightHandIndex4
       parentName: swat:RightHandIndex3
@@ -794,8 +795,7 @@ ModelImporter:
     - name: swat:RightHandMiddle1
       parentName: swat:RightHand
       position: {x: 0.12396108, y: 2.4763108e-10, z: 0.000000009942178}
-      rotation: {x: 0.000000014901159, y: 0.000000044699302, z: -0.000000029808607,
-        w: 1}
+      rotation: {x: 0.000000014901159, y: 0.000000044699302, z: -0.000000029808607, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: swat:RightHandMiddle2
       parentName: swat:RightHandMiddle1
@@ -815,20 +815,17 @@ ModelImporter:
     - name: swat:RightHandRing1
       parentName: swat:RightHand
       position: {x: 0.11950694, y: 0.0012054949, z: -0.027023913}
-      rotation: {x: 0.00000002980232, y: 0.000000029800228, z: -0.000000014905348,
-        w: 1}
+      rotation: {x: 0.00000002980232, y: 0.000000029800228, z: -0.000000014905348, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: swat:RightHandRing2
       parentName: swat:RightHandRing1
       position: {x: 0.062114943, y: -0.0000000018401899, z: 0.0000000012143397}
-      rotation: {x: -0.000000029802319, y: -0.000000029796038, z: 0.00000004470766,
-        w: 1}
+      rotation: {x: -0.000000029802319, y: -0.000000029796038, z: 0.00000004470766, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: swat:RightHandRing3
       parentName: swat:RightHandRing2
       position: {x: 0.039003395, y: 0.000000002331677, z: 0.0000000030872942}
-      rotation: {x: 0.000000059604638, y: 0.000000014890691, z: -0.000000074507895,
-        w: 1}
+      rotation: {x: 0.000000059604638, y: 0.000000014890691, z: -0.000000074507895, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: swat:RightHandRing4
       parentName: swat:RightHandRing3
@@ -843,8 +840,7 @@ ModelImporter:
     - name: swat:RightHandPinky2
       parentName: swat:RightHandPinky1
       position: {x: 0.042007197, y: 0.0000000012805037, z: 0.000000002081574}
-      rotation: {x: -0.000000014901161, y: 0.000000029800228, z: -0.000000014905348,
-        w: 1}
+      rotation: {x: -0.000000014901161, y: 0.000000029800228, z: -0.000000014905348, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: swat:RightHandPinky3
       parentName: swat:RightHandPinky2
@@ -864,8 +860,7 @@ ModelImporter:
     - name: swat:LeftLeg
       parentName: swat:LeftUpLeg
       position: {x: 0.00007462989, y: -0.4802618, z: -0.006603334}
-      rotation: {x: 0.00049865263, y: -0.000000057218713, z: -0.0000000030900558,
-        w: 0.9999999}
+      rotation: {x: 0.00049865263, y: -0.000000057218713, z: -0.0000000030900558, w: 0.9999999}
       scale: {x: 1, y: 1, z: 1}
     - name: swat:LeftFoot
       parentName: swat:LeftLeg
@@ -890,8 +885,7 @@ ModelImporter:
     - name: swat:RightLeg
       parentName: swat:RightUpLeg
       position: {x: 0.000074629665, y: -0.4802611, z: -0.0066537773}
-      rotation: {x: 0.00055610825, y: -0.000000047337355, z: -0.0000000019623565,
-        w: 0.9999999}
+      rotation: {x: 0.00055610825, y: -0.000000047337355, z: -0.0000000019623565, w: 0.9999999}
       scale: {x: 1, y: 1, z: 1}
     - name: swat:RightFoot
       parentName: swat:RightLeg
@@ -925,6 +919,9 @@ ModelImporter:
   animationType: 3
   humanoidOversampling: 1
   avatarSetup: 1
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  importBlendShapeDeformPercent: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 
   assetBundleName: 

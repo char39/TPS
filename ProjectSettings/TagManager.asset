@@ -12,6 +12,7 @@ TagManager:
   - Barrel
   - Enemy
   - E_Bullet
+  - EnemySwat
   layers:
   - Default
   - TransparentFX

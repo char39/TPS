@@ -2,7 +2,8 @@
     "name": "EnemyAD",
     "rootNamespace": "",
     "references": [
-        "GUID:5f24a21316b0a441a986ed21558e5533"
+        "GUID:5f24a21316b0a441a986ed21558e5533",
+        "GUID:09a1a14b6362e4e04a33986fd5cef99e"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

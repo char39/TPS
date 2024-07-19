@@ -26,6 +26,10 @@ public class BulletDamage : MonoBehaviour
         {
             SoundManager.S_Instance.PlaySound(transform.position, clip_wall);
         }
+        if (col.gameObject.CompareTag("Enemy") || col.gameObject.CompareTag("EnemySwat"))
+        {
+            
+        }
         gameObject.SetActive(false);
     }
 }

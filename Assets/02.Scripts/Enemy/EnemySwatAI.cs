@@ -4,39 +4,39 @@ using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
 
-public class EnemyAI : MonoBehaviour
+public class EnemySwatAI : MonoBehaviour
 {
     public enum State   // 열거형 상수
     { PTROL = 0, TRACE = 1, ATTACK = 2, DIE = 3 }
-    public State state = State.PTROL;   // 시작하자마자 PTROL로
+    public State state = State.PTROL;
 
-    private Transform playerTr;    // 거리를 재기 위해 선언
-    private Transform enemyTr;     // ""
+    private Transform playerTr;
+    private Transform enemySwatTr;
     private Animator animator;
-    private float attackDist = 10.0f;         // 5.0f 범위에 들면 공격
-    private float traceDist = 20.0f;         // 10.0f 범위에 들면 추적
-    public bool isDie = false;              // 사망 여부
-    private WaitForSeconds waitTime;        // 기다리는 값 선언
-    private EnemyMoveAgent enemyMoveAgent;
-    private EnemyFire enemyFire;
+    private float attackDist = 10.0f;
+    private float traceDist = 20.0f;
+    public bool isDie = false;
+    private WaitForSeconds waitTime;
+    private EnemySwatMoveAgent enemySwatMoveAgent;
+    private EnemySwatFire enemySwatFire;
 
-    private readonly int hashMove = Animator.StringToHash("IsMove");    // 애니메이터 컨트롤러의 정의된 파라미터의 해시값을 정수로 추출
-    private readonly int hashSpeed = Animator.StringToHash("moveSpeed");// 성능 향상을 위함. 미리 문자열 값을 정수 값으로 바꾸어 컴파일러가 읽기 빠르게
+    private readonly int hashMove = Animator.StringToHash("IsMove");
+    private readonly int hashSpeed = Animator.StringToHash("moveSpeed");
     private readonly int hashDie = Animator.StringToHash("DieTrigger");
     private readonly int hashDieIndex = Animator.StringToHash("Die_Index");
     private readonly int hashOffset = Animator.StringToHash("Offset");
     private readonly int hashWalkSpeed = Animator.StringToHash("WalkSpeed");
 
-    void Awake()    //EnemyMoveAgent.cs 보다 빨리 호출되게 하기 위함
+    void Awake()
     {
-        enemyMoveAgent = GetComponent<EnemyMoveAgent>();
+        enemySwatMoveAgent = GetComponent<EnemySwatMoveAgent>();
         var player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null) // 유효성 검사. 옵젝이 없으면 안함
+        if (player != null)
             playerTr = player.GetComponent<Transform>();
-        enemyTr = GetComponent<Transform>();
-        enemyFire = GetComponent<EnemyFire>();
+        enemySwatTr = GetComponent<Transform>();
+        enemySwatFire = GetComponent<EnemySwatFire>();
         animator = GetComponent<Animator>();
-        waitTime = new WaitForSeconds(0.3f);    // 0.3초 기다리는 값 할당
+        waitTime = new WaitForSeconds(0.3f);
     }
 
     void OnEnable()
@@ -49,16 +49,16 @@ public class EnemyAI : MonoBehaviour
 
     void Update()
     {
-        animator.SetFloat(hashSpeed, enemyMoveAgent.speed);
+        animator.SetFloat(hashSpeed, enemySwatMoveAgent.speed);
     }
 
-    IEnumerator CheckState()    // 현재 거리에 따라 열거형 상수 State 값을 지정. 그 뒤 waitTime 만큼 대기.
+    IEnumerator CheckState()
     {
         while (!isDie)
         {
             if (state == State.DIE)
-                yield break;    // 열거형 상수 State 값이 DIE면 이 함수 종료.
-            float dist = (playerTr.position - enemyTr.position).magnitude;
+                yield break;
+            float dist = (playerTr.position - enemySwatTr.position).magnitude;
             if (dist <= attackDist)
                 state = State.ATTACK;
             else if (dist <= traceDist)
@@ -68,7 +68,7 @@ public class EnemyAI : MonoBehaviour
             yield return waitTime;
         }
     }
-    IEnumerator Action()        // waitTime 만큼 대기한 후, switch 실행
+    IEnumerator Action()
     {
         while (!isDie)
         {
@@ -76,24 +76,24 @@ public class EnemyAI : MonoBehaviour
             switch (state)
             {
                 case State.PTROL:
-                    enemyFire.isFire = false;
-                    enemyMoveAgent.patrolling = true;
+                    enemySwatFire.isFire = false;
+                    enemySwatMoveAgent.patrolling = true;
                     animator.SetBool(hashMove, true);
                     break;
                 case State.ATTACK:
-                    if (!enemyFire.isFire)
-                        enemyFire.isFire = true;
-                    enemyMoveAgent.Stop();
+                    if (!enemySwatFire.isFire)
+                        enemySwatFire.isFire = true;
+                    enemySwatMoveAgent.Stop();
                     animator.SetBool(hashMove, false);
                     break;
                 case State.TRACE:
-                    enemyFire.isFire = false;
-                    enemyMoveAgent.traceTarget = playerTr.position;
+                    enemySwatFire.isFire = false;
+                    enemySwatMoveAgent.traceTarget = playerTr.position;
                     animator.SetBool(hashMove, true);
                     break;
                 case State.DIE:
-                    enemyFire.isFire = false;
-                    enemyMoveAgent.Stop();
+                    enemySwatFire.isFire = false;
+                    enemySwatMoveAgent.Stop();
                     animator.SetInteger(hashDieIndex, (int)Random.Range(0, 3));
                     animator.SetTrigger(hashDie);
                     GetComponent<CapsuleCollider>().enabled = false;
@@ -109,7 +109,7 @@ public class EnemyAI : MonoBehaviour
         yield return new WaitForSeconds(3.0f);
         isDie = false;
         GetComponent<CapsuleCollider>().enabled = true;
-        gameObject.tag = "Enemy";
+        gameObject.tag = "EnemySwat";
         gameObject.SetActive(false);
     }
 }

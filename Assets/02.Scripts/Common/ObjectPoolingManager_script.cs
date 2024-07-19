@@ -5,12 +5,19 @@ using UnityEngine;
 public class ObjectPoolingManager_script : MonoBehaviour
 {
     public static ObjectPoolingManager_script poolingManager;
-    [SerializeField]private GameObject bulletPrefab;
-    [SerializeField] private GameObject e_bulletPrefab;
-    public int maxPool = 10;    //오브젝트 풀에 생성 할 개수
-    public int maxPool_e = 10;
+    private GameObject bulletPrefab;
+    private GameObject e_bulletPrefab;
+    private GameObject enemyPrefab;
+    private GameObject enemySwatPrefab;
+    private int maxPool = 20;    //오브젝트 풀에 생성 할 개수
+    private int maxPool_e = 25;
+    private int maxPool_Enemy = 10;
+    private int maxPool_EnemySwat = 10;
     public List<GameObject> bulletPoolList;
     public List<GameObject> e_bulletPoolList;
+    public List<GameObject> enemyPoolList;
+    public List<GameObject> enemySwatPoolList;
+    public List<Transform> spawnPointList;
 
     void Awake()
     {
@@ -21,14 +28,76 @@ public class ObjectPoolingManager_script : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         bulletPrefab = Resources.Load<GameObject>("Prefab/Bullet");
         e_bulletPrefab = Resources.Load<GameObject>("Prefab/E_Bullet");
+        enemyPrefab = Resources.Load<GameObject>("Prefab/Enemy");
+        enemySwatPrefab = Resources.Load<GameObject>("Prefab/EnemySwat");
         CreateBulletPool(); //오브젝트 풀링 생성 함수
         CreateE_BulletPool();
+        CreateEnemyPool();
+        CreateEnemySwatPool();
+    }
+    
+    void Start()
+    {
+        FindSpawnPoint();
+    }
+
+    void FindSpawnPoint()
+    {
+        var spawnpoints = GameObject.Find("SpawnPoints");
+        if (spawnpoints != null)
+            spawnpoints.GetComponentsInChildren(spawnPointList);
+        spawnPointList.RemoveAt(0); // 부모 옵젝만 리스트에서 지우기
+        if (spawnPointList.Count > 0)
+        {
+            StartCoroutine(CreateEnemy());
+            StartCoroutine(CreateEnemySwat());
+        }
+    }
+    IEnumerator CreateEnemy()
+    {
+        while (!GameManager.instance.isGameOver)
+        {
+            yield return new WaitForSeconds(3.0f);          // 3.0f 초 대기
+            if (GameManager.instance.isGameOver)            // 게임오버라면
+                yield break;                                    // while문 탈출
+            foreach (GameObject enemy in enemyPoolList)     
+            {
+                if (!enemy.activeSelf)
+                {
+                    int index = Random.Range(0, spawnPointList.Count);
+                    enemy.transform.position = spawnPointList[index].position;
+                    enemy.transform.rotation = spawnPointList[index].rotation;
+                    enemy.gameObject.SetActive(true);
+                    break;
+                }
+            }
+        }
+    }
+    IEnumerator CreateEnemySwat()
+    {
+        while (!GameManager.instance.isGameOver)
+        {
+            yield return new WaitForSeconds(3.0f);          // 3.0f 초 대기
+            if (GameManager.instance.isGameOver)            // 게임오버라면
+                yield break;                                    // while문 탈출
+            foreach (GameObject enemy in enemySwatPoolList)     
+            {
+                if (!enemy.activeSelf)
+                {
+                    int index = Random.Range(0, spawnPointList.Count);
+                    enemy.transform.position = spawnPointList[index].position;
+                    enemy.transform.rotation = spawnPointList[index].rotation;
+                    enemy.gameObject.SetActive(true);
+                    break;
+                }
+            }
+        }
     }
 
     void CreateBulletPool()
     {
         GameObject playerBulletGroup = new GameObject("PlayerBulletGroup");
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < maxPool; i++)
         {
             var bullets = Instantiate(bulletPrefab, playerBulletGroup.transform);
             bullets.name = $"{(i + 1).ToString()} 발";
@@ -51,7 +120,7 @@ public class ObjectPoolingManager_script : MonoBehaviour
     void CreateE_BulletPool()
     {
         GameObject enemyBulletGroup = new GameObject("EnemyBulletGroup");
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < maxPool_e; i++)
         {
             var bullets = Instantiate(e_bulletPrefab, enemyBulletGroup.transform);
             bullets.name = $"e_{(i + 1).ToString()} 발";
@@ -69,5 +138,51 @@ public class ObjectPoolingManager_script : MonoBehaviour
             }
         }
         return null;    // 아니면 null
+    }
+
+    void CreateEnemyPool()
+    {
+        GameObject enemyGroup = new GameObject("EnemyGroup");
+        for (int i = 0; i < maxPool_Enemy; i++)
+        {
+            var enemys = Instantiate(enemyPrefab, enemyGroup.transform);
+            enemys.name = $"enemy {(i + 1).ToString()}";
+            enemys.SetActive(false);
+            enemyPoolList.Add(enemys);
+        }
+    }
+    public GameObject GetEnemyPool()
+    {
+        for (int i = 0; i < enemyPoolList.Count; i++)
+        {
+            if (enemyPoolList[i].activeSelf == false)  // 비활성 되어있다면 activeSelf는 활성화, 비활성화 여부를 알려줌
+            {
+                return enemyPoolList[i];   // 비활성화 되어있는 얘만 리턴
+            }
+        }
+        return null;    // 아니면 null
+    }
+
+    void CreateEnemySwatPool()
+    {
+        GameObject enemySwatGroup = new GameObject("EnemySwatGroup");
+        for (int i = 0; i < maxPool_EnemySwat; i++)
+        {
+            var enemys = Instantiate(enemySwatPrefab, enemySwatGroup.transform);
+            enemys.name = $"enemy {(i + 1).ToString()}";
+            enemys.SetActive(false);
+            enemySwatPoolList.Add(enemys);
+        }
+    }
+    public GameObject GetEnemySwatPool()
+    {
+        for (int i = 0; i < enemySwatPoolList.Count; i++)
+        {
+            if (enemySwatPoolList[i].activeSelf == false)
+            {
+                return enemySwatPoolList[i];
+            }
+        }
+        return null;
     }
 }

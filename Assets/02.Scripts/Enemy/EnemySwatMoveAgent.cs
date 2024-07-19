@@ -5,7 +5,7 @@ using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
 
-public class EnemyMoveAgent : MonoBehaviour
+public class EnemySwatMoveAgent : MonoBehaviour
 {
     
     // 패트롤 지점을 담기 위한 List Generic(일반형) 변수
@@ -13,13 +13,13 @@ public class EnemyMoveAgent : MonoBehaviour
     public int nextIndex = 0;       // 다음 순찰 지점의 배열 Index 값
     [SerializeField] private NavMeshAgent agent;
     private Rigidbody rb;
-    private EnemyAI enemyAI;
+    private EnemySwatAI enemySwatAI;
 
     private readonly float patrollSpeed = 2.5f;
     private readonly float traceSpeed = 4.0f;
     private float damping = 1.0f;   // 회전할 때의 속도를 조절하는 계수
     private bool _patrolling;
-    private Transform enemyTr;
+    private Transform enemySwatTr;
     public bool patrolling      // 프로퍼티
     {
         get { return _patrolling; }
@@ -56,8 +56,8 @@ public class EnemyMoveAgent : MonoBehaviour
 
     void Start()
     {
-        enemyAI = GetComponent<EnemyAI>();
-        enemyTr = GetComponent<Transform>();
+        enemySwatAI = GetComponent<EnemySwatAI>();
+        enemySwatTr = GetComponent<Transform>();
         agent = GetComponent<NavMeshAgent>();
         rb = GetComponent<Rigidbody>();
         agent.autoBraking = false;
@@ -73,10 +73,10 @@ public class EnemyMoveAgent : MonoBehaviour
 
     void Update()
     {
-        if (!agent.isStopped && !enemyAI.isDie)   // agent가 움직이고 있다면
+        if (!agent.isStopped && !enemySwatAI.isDie)   // agent가 움직이고 있다면
         {
             Quaternion rot = Quaternion.LookRotation(agent.desiredVelocity);    // NavMeshAgent가 가야되는 방향 벡터를 Quaternion 타입의 각도로 변환.
-            enemyTr.rotation = Quaternion.Slerp(enemyTr.rotation, rot, Time.deltaTime * damping);   // 보간 함수를 이용하여 부드럽게 회전시킴.
+            enemySwatTr.rotation = Quaternion.Slerp(enemySwatTr.rotation, rot, Time.deltaTime * damping);   // 보간 함수를 이용하여 부드럽게 회전시킴.
         }
         if (!_patrolling) return;
         FindWayPoint();
@@ -84,22 +84,6 @@ public class EnemyMoveAgent : MonoBehaviour
 
     private void FindWayPoint()             // 수색 경로를 탐색
     {
-        /* 이런 방법도 있다 (1)
-                float dist = Vector3.Distance(transform.position, wayPointList[nextIndex].position);
-                if (dist <= 0.5f)    // 다음 도착지점까지 거리가 0.5 이하일 경우
-                {
-                    nextIndex = ++nextIndex % wayPointList.Count;
-                    MovewayPoint();
-                }
-                */
-        /* 이런 방법도 있다 (2)
-        float dist = (wayPointList[nextIndex].position - transform.position).magnitude;     // (목표 지점 - 본인 위치).magnitude : 거리 값으로 바뀜
-        if (dist <= 0.5f)    // 다음 도착지점까지 거리가 0.5 이하일 경우
-        {
-            nextIndex = ++nextIndex % wayPointList.Count;
-            MovewayPoint();
-        }
-        */
         if (agent.remainingDistance <= 0.5f)    // 다음 도착지점까지 거리가 0.5 이하일 경우
         {
             nextIndex = ++nextIndex % wayPointList.Count;

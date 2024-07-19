@@ -5,6 +5,7 @@ using UnityEngine;
 public class BulletMove : MonoBehaviour
 {
     private float speed;
+    public float damage;
     private Rigidbody rb;
     private TrailRenderer trail;
 
@@ -12,6 +13,7 @@ public class BulletMove : MonoBehaviour
     {
         trail = GetComponent<TrailRenderer>();
         speed = 1000f;
+        damage = 25f;
         rb = GetComponent<Rigidbody>();
         //gameObject.SetActive(false);
     }

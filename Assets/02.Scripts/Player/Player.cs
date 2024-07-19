@@ -43,6 +43,10 @@ public class Player : MonoBehaviour
 
     #endregion
 
+    #region vars 3
+    private ParticleSystem muzzFlash;
+    #endregion
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -56,6 +60,9 @@ public class Player : MonoBehaviour
         source = GetComponent<AudioSource>();
         fireCount = 0;
         isRun = false;
+
+        muzzFlash = firePos.GetChild(0).GetComponent<ParticleSystem>();
+        muzzFlash.Stop();
     }
 
     void Update()
@@ -132,6 +139,10 @@ public class Player : MonoBehaviour
 
     IEnumerator PlayerGunFire()
     {
+        if (Input.GetMouseButtonUp(0) || !isFire || isRun)
+        {
+            muzzFlash.Stop();
+        }
         if (Input.GetMouseButton(0) && !isFire && !isRun)
         {
             if (fireCount == 10 && !isReload)
@@ -154,6 +165,7 @@ public class Player : MonoBehaviour
                     bullets.transform.rotation = firePos.rotation;
                     bullets.SetActive(true);
                     source.PlayOneShot(audioClip, 1.0f);
+                    muzzFlash.Play();
                     yield return new WaitForSeconds(0.1f);
                 }
                 isFire = false;
