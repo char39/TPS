@@ -41,6 +41,7 @@ public class EnemyAI : MonoBehaviour
 
     void OnEnable()
     {
+        state = State.PTROL;
         animator.SetFloat(hashOffset, Random.Range(0.1f, 1.0f));
         animator.SetFloat(hashWalkSpeed, Random.Range(1.0f, 2.0f));
         StartCoroutine(CheckState());
