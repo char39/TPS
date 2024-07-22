@@ -20,9 +20,13 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Barrel
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 0cb3a092ec94c2741979790357cabba3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 0cb3a092ec94c2741979790357cabba3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 8.69
+      value: -5.01
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 0cb3a092ec94c2741979790357cabba3, type: 3}
       propertyPath: m_LocalPosition.y
@@ -81,6 +85,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100000, guid: 0cb3a092ec94c2741979790357cabba3, type: 3}
       insertIndex: -1
       addedObject: {fileID: -4335960292098504715}
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: 0cb3a092ec94c2741979790357cabba3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4005442086379383562}
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: 0cb3a092ec94c2741979790357cabba3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6379899220584183025}
   m_SourcePrefab: {fileID: 100100000, guid: 0cb3a092ec94c2741979790357cabba3, type: 3}
 --- !u!1 &6340548939995291396 stripped
 GameObject:
@@ -153,4 +163,36 @@ MonoBehaviour:
   meshRenderer: {fileID: 0}
   rb: {fileID: 0}
   hitCount: 0
+  isExplo: 0
   clip_explo: {fileID: 8300000, guid: c59b70e4dec5147a487fd2b4d5acbfc2, type: 3}
+--- !u!208 &4005442086379383562
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6340548939995291396}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.85, y: 0.8, z: 1.25}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0, z: 1.125}
+  m_TimeToStationary: 0.5
+--- !u!114 &6379899220584183025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6340548939995291396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fcf5e5a257254ed7977c84c9a368ef8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flarePrefab: {fileID: 0}
+  clip_wall: {fileID: 0}
+  clip_barrel: {fileID: 0}

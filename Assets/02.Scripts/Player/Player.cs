@@ -45,6 +45,10 @@ public class Player : MonoBehaviour
 
     #region vars 3
     private ParticleSystem muzzFlash;
+    private readonly string enemyTag = "Enemy";
+    private readonly string enemyTag2 = "EnemySwat";
+    private readonly string barrelTag = "Barrel";
+
     #endregion
 
     void Start()
@@ -67,6 +71,7 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        Debug.DrawRay(firePos.position, firePos.forward * 100f, Color.red);
         PlayerMove_All();
         StartCoroutine(PlayerGunFire());
     }
@@ -154,10 +159,11 @@ public class Player : MonoBehaviour
             }
             else if (fireCount < 10 && !isReload)
             {
-                //Instantiate(bulletPrefab, firePos.position, firePos.rotation);
-                // 오브젝트 풀링 방식을 아래에 작성함.
                 fireCount++;
                 isFire = true;
+                yield return new WaitForSeconds(0.1f);
+                muzzFlash.Play();
+                /*  1. 총알 Projectile movement 방식
                 var bullets = ObjectPoolingManager_script.poolingManager.GetBulletPool();   // 비활성화 된 몇 번째 총알 반환
                 if (bullets != null)    // 총알이 10개 다 활성화 되어있으면 작동X
                 {
@@ -168,6 +174,34 @@ public class Player : MonoBehaviour
                     muzzFlash.Play();
                     yield return new WaitForSeconds(0.1f);
                 }
+                */
+                RaycastHit hit; // 광선이 오브젝트에 충돌할 경우 충돌 지점이나 거리 등을 알려주는 광선 구조체
+                if (Physics.Raycast(firePos.position, firePos.forward, out hit, 20f))    // 광선을 쐈을 때 반경 15f안에서 맞았는지 여부
+                {
+                    if (hit.collider.gameObject.tag == enemyTag || hit.collider.gameObject.tag == enemyTag2)
+                    {
+                        //Debug.Log("적 hit");
+                        object[] paramsObj = new object[2];
+                        paramsObj[0] = hit.point;       // 첫 번째 배열에 맞은 위치값을 전달
+                        paramsObj[1] = 25f;             // 두 번째 배열에 총알 데미지값을 전달
+                        hit.collider.gameObject.SendMessage("OnDamage", paramsObj, SendMessageOptions.DontRequireReceiver); // public이 아니어도 호출 가능
+                    }
+                    if (hit.collider.gameObject.tag == barrelTag)
+                    {
+                        //Debug.Log("배럴 hit");
+                        object[] paramsObj = new object[1];
+                        paramsObj[0] = 1;
+                        hit.collider.gameObject.SendMessage("OnDamage", paramsObj, SendMessageOptions.DontRequireReceiver);
+                    }
+                    if (hit.collider.gameObject)
+                    {
+                        //Debug.Log("벽, 바닥 hit");
+                        object[] paramsObjs = new object[1];
+                        paramsObjs[0] = hit.point;
+                        hit.collider.gameObject.SendMessage("BulletHitEffect", paramsObjs, SendMessageOptions.DontRequireReceiver);
+                    }
+                }
+
                 isFire = false;
             }
         }

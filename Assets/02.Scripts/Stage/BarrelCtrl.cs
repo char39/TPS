@@ -12,6 +12,7 @@ public class BarrelCtrl : MonoBehaviour
     [SerializeField]private MeshRenderer meshRenderer;
     [SerializeField]private Rigidbody rb;
     [SerializeField]private int hitCount = 0;
+    [SerializeField]private bool isExplo = false;
     [SerializeField]private AudioClip clip_explo;
     private readonly string bulletTag = "Bullet";
     private readonly string bulletTag_E = "E_Bullet";
@@ -25,6 +26,7 @@ public class BarrelCtrl : MonoBehaviour
         meshRenderer.material.mainTexture = textures[Random.Range(0, textures.Length - 1)];
     }
 
+    /*  Projectile movement 총알 충돌시
     private void OnCollisionEnter(Collision col)
     {
         if (col.gameObject.CompareTag(bulletTag) || col.gameObject.CompareTag(bulletTag_E))
@@ -37,6 +39,19 @@ public class BarrelCtrl : MonoBehaviour
             }
         }
     }
+    */
+    
+    void OnDamage(object[] paramsObj)
+    {
+        hitCount += (int)paramsObj[0];
+        if (hitCount >= 5 && !isExplo)
+        {
+            isExplo = true;
+            ExplosionBarrel();
+            StartCoroutine(GameManager.instance.CameraShake());
+        }
+    }
+
     private void ExplosionBarrel()
     {
         GameObject eff = Instantiate(exploEffect, transform.position, Quaternion.identity);
