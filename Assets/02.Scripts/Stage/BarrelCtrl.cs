@@ -17,12 +17,17 @@ public class BarrelCtrl : MonoBehaviour
     private readonly string bulletTag = "Bullet";
     private readonly string bulletTag_E = "E_Bullet";
 
+    [SerializeField]private MeshFilter meshFilter;
+    [SerializeField]private Mesh[] meshes;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         meshRenderer = GetComponent<MeshRenderer>();
+        meshFilter = GetComponent<MeshFilter>();
         textures = Resources.LoadAll<Texture>("Texture");
         exploEffect = Resources.Load<GameObject>("Prefab/BigExplosionEffect");
+        meshes = Resources.LoadAll<Mesh>("Mesh");
         meshRenderer.material.mainTexture = textures[Random.Range(0, textures.Length - 1)];
     }
 
@@ -43,6 +48,12 @@ public class BarrelCtrl : MonoBehaviour
     
     void OnDamage(object[] paramsObj)
     {
+        Vector3 firePos = (Vector3)paramsObj[1];    // 발사 위치
+        Vector3 hitPos = (Vector3)paramsObj[2];     // 맞은 위치
+        Vector3 incomeVector = hitPos - firePos;    // ray의 각도를 구하기 위함
+        incomeVector = incomeVector.normalized;     // 입사 벡터
+        GetComponent<Rigidbody>().AddForceAtPosition(incomeVector * 1500f, hitPos); // ray의 hit 좌표에 입사 벡터의 각도로 힘을 생성. 물리를 스크립트로 적용한 예
+
         hitCount += (int)paramsObj[0];
         if (hitCount >= 5 && !isExplo)
         {
@@ -71,6 +82,9 @@ public class BarrelCtrl : MonoBehaviour
             }
             Invoke("BarrelMassChange", 3.0f);
         }
+        int index = Random.Range(1, meshes.Length);
+        meshFilter.sharedMesh = meshes[index]; // 터지고 mesh 바꿈
+        GetComponent<MeshCollider>().sharedMesh = meshes[index];   // 찌그러진 mesh collider도 적용
     }
     void BarrelMassChange()
     {

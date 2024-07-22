@@ -46,7 +46,7 @@ public class EnemyDamage : MonoBehaviour
         ShowBloodEffect((Vector3)paramsObj[0]);
         hp -= (float)paramsObj[1];
         hp = Mathf.Clamp(hp, 0f, 100f);
-        Debug.Log("" + hp);
+        //Debug.Log("" + hp);
         if (hp <= 0f)
             Die();
     }

@@ -48,7 +48,6 @@ public class Player : MonoBehaviour
     private readonly string enemyTag = "Enemy";
     private readonly string enemyTag2 = "EnemySwat";
     private readonly string barrelTag = "Barrel";
-
     #endregion
 
     void Start()
@@ -161,8 +160,9 @@ public class Player : MonoBehaviour
             {
                 fireCount++;
                 isFire = true;
-                yield return new WaitForSeconds(0.1f);
                 muzzFlash.Play();
+                LazerBeam.instance.PlayerLazerBeam();
+
                 /*  1. 총알 Projectile movement 방식
                 var bullets = ObjectPoolingManager_script.poolingManager.GetBulletPool();   // 비활성화 된 몇 번째 총알 반환
                 if (bullets != null)    // 총알이 10개 다 활성화 되어있으면 작동X
@@ -189,8 +189,10 @@ public class Player : MonoBehaviour
                     if (hit.collider.gameObject.tag == barrelTag)
                     {
                         //Debug.Log("배럴 hit");
-                        object[] paramsObj = new object[1];
+                        object[] paramsObj = new object[3];
                         paramsObj[0] = 1;
+                        paramsObj[1] = firePos.position;
+                        paramsObj[2] = hit.point;
                         hit.collider.gameObject.SendMessage("OnDamage", paramsObj, SendMessageOptions.DontRequireReceiver);
                     }
                     if (hit.collider.gameObject)
@@ -201,7 +203,7 @@ public class Player : MonoBehaviour
                         hit.collider.gameObject.SendMessage("BulletHitEffect", paramsObjs, SendMessageOptions.DontRequireReceiver);
                     }
                 }
-
+                yield return new WaitForSeconds(0.1f);
                 isFire = false;
             }
         }

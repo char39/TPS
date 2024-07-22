@@ -9,7 +9,7 @@ public class ObjectPoolingManager_script : MonoBehaviour
     private GameObject e_bulletPrefab;
     private GameObject enemyPrefab;
     private GameObject enemySwatPrefab;
-    private int maxPool = 20;    //오브젝트 풀에 생성 할 개수
+    private int maxPool = 1;    //오브젝트 풀에 생성 할 개수
     private int maxPool_e = 25;
     private int maxPool_Enemy = 10;
     private int maxPool_EnemySwat = 10;
