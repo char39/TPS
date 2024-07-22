@@ -165,6 +165,8 @@ MonoBehaviour:
   hitCount: 0
   isExplo: 0
   clip_explo: {fileID: 8300000, guid: c59b70e4dec5147a487fd2b4d5acbfc2, type: 3}
+  meshFilter: {fileID: 0}
+  meshes: []
 --- !u!208 &4005442086379383562
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -175,7 +177,7 @@ NavMeshObstacle:
   m_Enabled: 1
   serializedVersion: 3
   m_Shape: 1
-  m_Extents: {x: 0.85, y: 0.8, z: 1.25}
+  m_Extents: {x: 0.76500005, y: 0.76500005, z: 1.125}
   m_MoveThreshold: 0.1
   m_Carve: 1
   m_CarveOnlyStationary: 1

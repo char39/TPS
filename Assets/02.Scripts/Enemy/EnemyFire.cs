@@ -42,7 +42,7 @@ public class EnemyFire : MonoBehaviour
 
     void Update()
     {
-        if (isFire)
+        if (isFire && !GameManager.instance.isGameOver)
         {
             if (Time.time >= nextFire)
             {

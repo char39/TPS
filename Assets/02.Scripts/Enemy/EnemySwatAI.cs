@@ -7,7 +7,7 @@ using UnityEngine;
 public class EnemySwatAI : MonoBehaviour
 {
     public enum State   // 열거형 상수
-    { PTROL = 0, TRACE = 1, ATTACK = 2, DIE = 3 }
+    { PTROL = 0, TRACE = 1, ATTACK = 2, DIE = 3, GAMEOVER = 4 }
     public State state = State.PTROL;
 
     private Transform playerTr;
@@ -26,6 +26,7 @@ public class EnemySwatAI : MonoBehaviour
     private readonly int hashDieIndex = Animator.StringToHash("Die_Index");
     private readonly int hashOffset = Animator.StringToHash("Offset");
     private readonly int hashWalkSpeed = Animator.StringToHash("WalkSpeed");
+    private readonly int hashPlayerDie = Animator.StringToHash("PlayerDieTrigger");
 
     void Awake()
     {
@@ -41,11 +42,14 @@ public class EnemySwatAI : MonoBehaviour
 
     void OnEnable()
     {
-        state = State.PTROL;
-        animator.SetFloat(hashOffset, Random.Range(0.1f, 1.0f));
-        animator.SetFloat(hashWalkSpeed, Random.Range(1.0f, 2.0f));
-        StartCoroutine(CheckState());
-        StartCoroutine(Action());
+        if (!GameManager.instance.isGameOver)
+        {
+            state = State.PTROL;
+            animator.SetFloat(hashOffset, Random.Range(0.1f, 1.0f));
+            animator.SetFloat(hashWalkSpeed, Random.Range(1.0f, 2.0f));
+            StartCoroutine(CheckState());
+            StartCoroutine(Action());
+        }
     }
 
     void Update()
@@ -55,7 +59,9 @@ public class EnemySwatAI : MonoBehaviour
 
     IEnumerator CheckState()
     {
-        while (!isDie)
+        if (GameManager.instance.isGameOver)
+            state = State.GAMEOVER;
+        while (!isDie && !GameManager.instance.isGameOver)
         {
             if (state == State.DIE)
                 yield break;
@@ -71,7 +77,9 @@ public class EnemySwatAI : MonoBehaviour
     }
     IEnumerator Action()
     {
-        while (!isDie)
+        if (GameManager.instance.isGameOver)
+            OnPlayerDie();
+        while (!isDie && !GameManager.instance.isGameOver)
         {
             yield return waitTime;
             switch (state)
@@ -113,4 +121,10 @@ public class EnemySwatAI : MonoBehaviour
         gameObject.tag = "EnemySwat";
         gameObject.SetActive(false);
     }
+    void OnPlayerDie()
+    {
+        StopAllCoroutines();
+        animator.SetTrigger(hashPlayerDie);
+    }
+
 }

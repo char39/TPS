@@ -7,7 +7,7 @@ using UnityEngine;
 public class EnemyAI : MonoBehaviour
 {
     public enum State   // 열거형 상수
-    { PTROL = 0, TRACE = 1, ATTACK = 2, DIE = 3 }
+    { PTROL = 0, TRACE = 1, ATTACK = 2, DIE = 3 , GAMEOVER = 4 }
     public State state = State.PTROL;   // 시작하자마자 PTROL로
 
     private Transform playerTr;    // 거리를 재기 위해 선언
@@ -26,6 +26,7 @@ public class EnemyAI : MonoBehaviour
     private readonly int hashDieIndex = Animator.StringToHash("Die_Index");
     private readonly int hashOffset = Animator.StringToHash("Offset");
     private readonly int hashWalkSpeed = Animator.StringToHash("WalkSpeed");
+    private readonly int hashPlayerDie = Animator.StringToHash("PlayerDieTrigger");
 
     void Awake()    //EnemyMoveAgent.cs 보다 빨리 호출되게 하기 위함
     {
@@ -41,11 +42,14 @@ public class EnemyAI : MonoBehaviour
 
     void OnEnable()
     {
-        state = State.PTROL;
-        animator.SetFloat(hashOffset, Random.Range(0.1f, 1.0f));
-        animator.SetFloat(hashWalkSpeed, Random.Range(1.0f, 2.0f));
-        StartCoroutine(CheckState());
-        StartCoroutine(Action());
+        if (!GameManager.instance.isGameOver)
+        {
+            state = State.PTROL;
+            animator.SetFloat(hashOffset, Random.Range(0.1f, 1.0f));
+            animator.SetFloat(hashWalkSpeed, Random.Range(1.0f, 2.0f));
+            StartCoroutine(CheckState());
+            StartCoroutine(Action());
+        }
     }
 
     void Update()
@@ -55,7 +59,9 @@ public class EnemyAI : MonoBehaviour
 
     IEnumerator CheckState()    // 현재 거리에 따라 열거형 상수 State 값을 지정. 그 뒤 waitTime 만큼 대기.
     {
-        while (!isDie)
+        if (GameManager.instance.isGameOver)
+            state = State.GAMEOVER;
+        while (!isDie && !GameManager.instance.isGameOver)
         {
             if (state == State.DIE)
                 yield break;    // 열거형 상수 State 값이 DIE면 이 함수 종료.
@@ -71,7 +77,9 @@ public class EnemyAI : MonoBehaviour
     }
     IEnumerator Action()        // waitTime 만큼 대기한 후, switch 실행
     {
-        while (!isDie)
+        if (GameManager.instance.isGameOver)
+            OnPlayerDie();
+        while (!isDie && !GameManager.instance.isGameOver)
         {
             yield return waitTime;
             switch (state)
@@ -112,5 +120,10 @@ public class EnemyAI : MonoBehaviour
         GetComponent<CapsuleCollider>().enabled = true;
         gameObject.tag = "Enemy";
         gameObject.SetActive(false);
+    }
+    void OnPlayerDie()
+    {
+        StopAllCoroutines();
+        animator.SetTrigger(hashPlayerDie);
     }
 }
