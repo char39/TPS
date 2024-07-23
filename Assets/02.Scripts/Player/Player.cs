@@ -29,10 +29,10 @@ public class Player : MonoBehaviour
     }
     public PlayerAnimation playerAnimation;
     public PlayerSound playerSound;
-    public WeaponType weaponType = WeaponType.SHOTGUN;
+    public WeaponType weaponType = WeaponType.RIFLE;
     public Image magazineImage; // 탄창 이미지
     public Text magazineText;   // 탄창에 남은 총알 수
-    public float reloadTime = 2.0f; // 재장전 시간
+    //public float reloadTime = 2.0f; // 재장전 시간
 
     private float moveSpeed = 5f;
     private float moveSpeedRun = 7.5f;
@@ -219,7 +219,7 @@ public class Player : MonoBehaviour
                 hit.collider.gameObject.SendMessage("BulletHitEffect", paramsObjs, SendMessageOptions.DontRequireReceiver);
             }
         }
-        //SoundManager.S_Instance.PlaySound(firePos.position, );
+        SoundManager.S_Instance.PlaySound(firePos.position, playerSound.fire[(int)weaponType]);
         yield return new WaitForSeconds(0.1f);
         UpdateBulletText();
         isFire = false;
@@ -234,6 +234,7 @@ public class Player : MonoBehaviour
     IEnumerator Reload()
     {
         isReload = true;
+        SoundManager.S_Instance.PlaySound(tr.position, playerSound.reload[(int)weaponType]);
         yield return new WaitForSeconds(playerSound.reload[(int)weaponType].length + 0.3f);
         currentBullet = maxBullet;
         magazineImage.fillAmount = 1.0f;
