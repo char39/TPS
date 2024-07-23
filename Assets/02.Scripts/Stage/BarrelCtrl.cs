@@ -76,7 +76,7 @@ public class BarrelCtrl : MonoBehaviour
             if (rb_col != null)
             {
                 SoundManager.S_Instance.PlaySound(transform.position, clip_explo);
-                rb_col.mass = 1.0f; // 배럴 무게를 기존 60.0f에서 1.0f로 바꿈
+                rb_col.mass = 20.0f; // 배럴 무게를 기존 60.0f에서 1.0f로 바꿈
                 rb_col.AddExplosionForce(1000, transform.position, 20f, 1200f);
                 // 폭발력, 폭발 위치, 폭발 반경, 위로 솟구치는 힘
             }

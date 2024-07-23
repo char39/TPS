@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerDamage : MonoBehaviour
 {
     private readonly string bullet_e_Tag = "E_Bullet";
     private GameObject bloodEffect;
+    private Image bloodScreen;
     public int hp = 0;
     public int maxHp = 100;
     private bool isDie = false;
@@ -13,6 +15,8 @@ public class PlayerDamage : MonoBehaviour
     void Start()
     {
         bloodEffect = Resources.Load<GameObject>("Effects/BulletImpactFleshBigEffects");
+        bloodScreen = GameObject.Find("Canvas_UI").transform.GetChild(0).GetComponent<Image>();
+        bloodScreen.color = Color.clear;
         hp = maxHp;
     }
 
@@ -24,6 +28,7 @@ public class PlayerDamage : MonoBehaviour
             hp -= 5;
             if (hp <= 0 && !isDie)
                 PlayerDie(col);
+            StartCoroutine(ShowBloodScreen());
 
         }
     }
@@ -48,5 +53,10 @@ public class PlayerDamage : MonoBehaviour
         GameObject blood = Instantiate(bloodEffect, pos, rot);
         Destroy(blood, 0.5f);
     }
-
+    IEnumerator ShowBloodScreen()
+    {
+        bloodScreen.color = new Color(1f, 0f, 0f, Random.Range(0.25f, 0.35f));
+        yield return new WaitForSeconds(0.1f);
+        bloodScreen.color = Color.clear;    // 색상값을 전부 (R,G,B,Alpha) 0, 0, 0, 0 으로 변경
+    }
 }
