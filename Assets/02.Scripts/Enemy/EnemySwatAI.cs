@@ -50,6 +50,8 @@ public class EnemySwatAI : MonoBehaviour
             StartCoroutine(CheckState());
             StartCoroutine(Action());
         }
+        else
+            return;
     }
 
     void Update()

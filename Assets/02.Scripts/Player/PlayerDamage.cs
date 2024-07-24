@@ -12,12 +12,16 @@ public class PlayerDamage : MonoBehaviour
     public int maxHp = 100;
     private bool isDie = false;
 
+    private Image image_hp;
+
     void Start()
     {
         bloodEffect = Resources.Load<GameObject>("Effects/BulletImpactFleshBigEffects");
         bloodScreen = GameObject.Find("Canvas_UI").transform.GetChild(0).GetComponent<Image>();
         bloodScreen.color = Color.clear;
         hp = maxHp;
+        image_hp = GameObject.Find("Canvas_UI").transform.GetChild(2).GetChild(2).GetComponent<Image>();
+        UpdateHp();
     }
 
     void OnCollisionEnter(Collision col)
@@ -26,10 +30,11 @@ public class PlayerDamage : MonoBehaviour
         {
             ShowBloodEffect(col);
             hp -= 5;
+            hp = Mathf.Clamp(hp, 0, 100);
+            UpdateHp();
             if (hp <= 0 && !isDie)
                 PlayerDie(col);
             StartCoroutine(ShowBloodScreen());
-
         }
     }
 
@@ -59,4 +64,16 @@ public class PlayerDamage : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
         bloodScreen.color = Color.clear;    // 색상값을 전부 (R,G,B,Alpha) 0, 0, 0, 0 으로 변경
     }
+
+    void UpdateHp()
+    {
+        image_hp.fillAmount = (float)hp / (float)maxHp;
+        if (image_hp.fillAmount <= 0.2f)
+            image_hp.color = Color.red;
+        else if (image_hp.fillAmount <= 0.5f)
+            image_hp.color = Color.yellow;
+        else if (image_hp.fillAmount <= 1f)
+            image_hp.color = Color.green;
+    }
+
 }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 [System.Serializable]
 public struct PlayerSound
@@ -49,6 +50,8 @@ public class Player : MonoBehaviour
     private bool isReload = false;  // 재장전 여부
     private int maxBullet = 10;
     private int currentBullet;
+    [SerializeField]private Sprite[] weaponIcons;   // 무기 변경 아이콘
+    [SerializeField]private Image weaponImage;      // 이미지 컴포넌트
     private Transform firePos;
     private AudioSource source;
     //[SerializeField]private AudioClip audioClip;
@@ -71,6 +74,10 @@ public class Player : MonoBehaviour
         magazineImage = GameObject.Find("Canvas_UI").transform.GetChild(1).GetChild(2).GetComponent<Image>();
         magazineText = GameObject.Find("Canvas_UI").transform.GetChild(1).GetChild(0).GetComponent<Text>();
 
+        weaponIcons = Resources.LoadAll<Sprite>("Icon");
+        weaponImage = GameObject.Find("Canvas_UI").transform.GetChild(3).GetChild(0).GetComponent<Image>();
+        weaponImage.sprite = weaponIcons[(int)weaponType];
+
         firePos = GameObject.FindWithTag("FirePos").transform;
         source = GetComponent<AudioSource>();
         currentBullet = maxBullet;
@@ -82,7 +89,7 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        Debug.DrawRay(firePos.position, firePos.forward * 100f, Color.red);
+        if (EventSystem.current.IsPointerOverGameObject()) return;  // UI 클릭 시 플레이어 움직임 X. 이벤트시스템.현재.마우스가옵젝위에존재시, 메서드종료.
         PlayerMove_All();
         StartCoroutine(PlayerGunFire());
     }
@@ -172,7 +179,6 @@ public class Player : MonoBehaviour
         }
         yield return null;
     }
-
     IEnumerator Fire()
     {
         currentBullet--;
@@ -224,13 +230,17 @@ public class Player : MonoBehaviour
         UpdateBulletText();
         isFire = false;
     }
-
     private void UpdateBulletText() // 총알 발사할 때마다 UI 왼쪽상단 탄창 총알 개수 갱신
     {
         magazineImage.fillAmount = (float)currentBullet / (float)maxBullet;
         magazineText.text = string.Format($"<color=#FFAAAA>{currentBullet}</color> / {maxBullet}");
     }
-
+    public void OnChangeWeapon()
+    {
+        //if (GameManager.instance.isPaused)  return;
+        weaponType = (WeaponType)((int)++weaponType % 2);   // enum 순서 변경
+        weaponImage.sprite = weaponIcons[(int)weaponType];  // weaponImage에 enum index 값과 동일한 weaponIcons sprite를 할당
+    }
     IEnumerator Reload()
     {
         isReload = true;

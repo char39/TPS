@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class LazerBeam : MonoBehaviour
 {
@@ -19,6 +20,8 @@ public class LazerBeam : MonoBehaviour
 
     public void PlayerLazerBeam()
     {
+        if (EventSystem.current.IsPointerOverGameObject()) return;
+
         Ray ray = new Ray(tr.position + (Vector3.up * 0.02f), tr.forward);  // 광선을 미리 생성
         RaycastHit hit;
         Debug.DrawRay(ray.origin, ray.direction * 100f, Color.yellow);

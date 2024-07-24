@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
     private Camera mainCamera;
     private Transform mainCam_tr;
     public bool isGameOver = false;
+    CanvasGroup inventoryOpen;
 
     void Awake()
     {
@@ -18,6 +19,8 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         mainCamera = GameObject.FindWithTag("MainCamera").GetComponent<Camera>();
         mainCam_tr = mainCamera.transform;
+        inventoryOpen = GameObject.Find("Inventory").GetComponent<CanvasGroup>();
+        InventoryOnOff(false);
     }
 
     public IEnumerator CameraShake()
@@ -37,5 +40,34 @@ public class GameManager : MonoBehaviour
         }
         mainCamera.transform.position = mainCam_tr.position;
         mainCamera.transform.rotation = mainCam_tr.rotation;
+    }
+
+    public bool isPaused = false;
+    public bool isOpened = false;
+
+    public void OnPauseClick()
+    {
+        isPaused = !isPaused;
+        Time.timeScale = isPaused ? 0.0f : 1.0f;
+        var playerObj = GameObject.FindGameObjectWithTag("Player");
+        var scripts = playerObj.GetComponents<MonoBehaviour>();         // Player에게 있는 모든 스크립트들을 Get.
+        foreach (var script in scripts)
+            script.enabled = !isPaused;
+        var canvasGroup = GameObject.Find("Canvas_UI").transform.GetChild(3).GetComponent<CanvasGroup>();
+        var canvasGroupBlood = GameObject.Find("Canvas_UI").transform.GetChild(0).GetComponent<CanvasGroup>();
+        canvasGroup.blocksRaycasts = !isPaused;
+        canvasGroupBlood.blocksRaycasts = !isPaused;
+    }
+    
+    public void InventoryButtonClick()
+    {
+        isOpened = !isOpened;
+        InventoryOnOff(isOpened);
+    }
+    public void InventoryOnOff(bool isOpen)
+    {
+        inventoryOpen.alpha = isOpen ? 1.0f : 0.0f;
+        inventoryOpen.interactable = isOpen ? true : false;
+        inventoryOpen.blocksRaycasts = isOpen ? true : false;
     }
 }

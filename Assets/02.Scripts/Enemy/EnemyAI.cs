@@ -50,6 +50,8 @@ public class EnemyAI : MonoBehaviour
             StartCoroutine(CheckState());
             StartCoroutine(Action());
         }
+        else
+            return;
     }
 
     void Update()
