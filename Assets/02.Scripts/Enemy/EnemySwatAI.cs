@@ -7,7 +7,7 @@ using UnityEngine;
 public class EnemySwatAI : MonoBehaviour
 {
     public enum State   // 열거형 상수
-    { PTROL = 0, TRACE = 1, ATTACK = 2, DIE = 3, GAMEOVER = 4 }
+    { PTROL = 0, TRACE = 1, ATTACK = 2, DIE = 3, GAMEOVER = 4, EXPLOSIONDIE = 5 }
     public State state = State.PTROL;
 
     private Transform playerTr;
@@ -44,6 +44,7 @@ public class EnemySwatAI : MonoBehaviour
     {
         if (!GameManager.instance.isGameOver)
         {
+            PlayerDamage.OnPlayerDie += OnPlayerDie;    // 델리게이트 이벤트 연결
             state = State.PTROL;
             animator.SetFloat(hashOffset, Random.Range(0.1f, 1.0f));
             animator.SetFloat(hashWalkSpeed, Random.Range(1.0f, 2.0f));
@@ -52,6 +53,11 @@ public class EnemySwatAI : MonoBehaviour
         }
         else
             return;
+    }
+
+    void OnDisable()
+    {
+        PlayerDamage.OnPlayerDie -= OnPlayerDie;
     }
 
     void Update()
@@ -65,7 +71,7 @@ public class EnemySwatAI : MonoBehaviour
             state = State.GAMEOVER;
         while (!isDie && !GameManager.instance.isGameOver)
         {
-            if (state == State.DIE)
+            if (state == State.DIE || state == State.EXPLOSIONDIE)
                 yield break;
             float dist = (playerTr.position - enemySwatTr.position).magnitude;
             if (dist <= attackDist)
@@ -111,6 +117,18 @@ public class EnemySwatAI : MonoBehaviour
                     gameObject.tag = "Untagged";
                     StartCoroutine(ObjectPoolPush());
                     isDie = true;
+                    GameManager.instance.KillScore();
+                    break;
+                case State.EXPLOSIONDIE:
+                    enemySwatFire.isFire = false;
+                    enemySwatMoveAgent.Stop();
+                    animator.SetInteger(hashDieIndex, 0);
+                    animator.SetTrigger(hashDie);
+                    GetComponent<CapsuleCollider>().enabled = false;
+                    gameObject.tag = "Untagged";
+                    StartCoroutine(ObjectPoolPush());
+                    isDie = true;
+                    GameManager.instance.KillScore();
                     break;
             }
         }

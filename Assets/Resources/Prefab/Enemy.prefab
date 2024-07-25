@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b194042abf4e2d347a3d6aaed6aa2d21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  type: 0
   color: {r: 0, g: 0, b: 0, a: 0}
   radius: 0
 --- !u!1 &5650780914108566600
@@ -287,6 +288,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: c2e8b5aedf5604351b3772ff7dad81dc, type: 2}
+    - target: {fileID: 9500000, guid: a1172801cc64d474bb0e48c03b543a5a, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:

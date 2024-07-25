@@ -18,6 +18,10 @@ public class EnemySwatDamage : MonoBehaviour
     {
         GetComponent<EnemySwatAI>().state = EnemySwatAI.State.DIE;
     }
+    void ExplosionDie()
+    {
+        GetComponent<EnemySwatAI>().state = EnemySwatAI.State.EXPLOSIONDIE;
+    }
     
     private void ShowBloodEffect(Vector3 col) // blood 이펙트 보여주기
     {

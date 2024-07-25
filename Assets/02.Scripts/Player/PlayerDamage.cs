@@ -12,6 +12,9 @@ public class PlayerDamage : MonoBehaviour
     public int maxHp = 100;
     private bool isDie = false;
 
+    public delegate void PlayerDie_Handler();               // 델리게이트
+    public static event PlayerDie_Handler OnPlayerDie;      // 델리게이트 이벤트
+
     private Image image_hp;
 
     void Start()
@@ -40,6 +43,7 @@ public class PlayerDamage : MonoBehaviour
 
     public void PlayerDie(Collision col)
     {
+        /* 
         isDie = true;
         GameManager.instance.isGameOver = true;
         GameObject[] enemy = GameObject.FindGameObjectsWithTag("Enemy");
@@ -48,6 +52,8 @@ public class PlayerDamage : MonoBehaviour
         GameObject[] enemySwat = GameObject.FindGameObjectsWithTag("EnemySwat");
         for (int i = 0; i < enemySwat.Length; i++)
             enemySwat[i].gameObject.SendMessage("OnPlayerDie", SendMessageOptions.DontRequireReceiver);
+        */
+        OnPlayerDie();
     }
 
     private void ShowBloodEffect(Collision col)

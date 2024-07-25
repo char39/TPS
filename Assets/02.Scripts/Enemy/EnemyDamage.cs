@@ -30,7 +30,11 @@ public class EnemyDamage : MonoBehaviour
     void Die()
     {
         GetComponent<EnemyAI>().state = EnemyAI.State.DIE;
-    } 
+    }
+    void ExplosionDie()
+    {
+        GetComponent<EnemyAI>().state = EnemyAI.State.EXPLOSIONDIE;
+    }
 
     private void ShowBloodEffect(Vector3 col) // blood 이펙트 보여주기
     {

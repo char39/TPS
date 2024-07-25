@@ -68,11 +68,14 @@ public class EnemySwatMoveAgent : MonoBehaviour
             group.GetComponentsInChildren<Transform>(wayPointList); // WayPointGroup 옵젝부터 그 자식옵젝 전부 get
             wayPointList.RemoveAt(0);   // 자식들만 쓸 것이기 때문에 본인 옵젝은 리스트에서 제거함 (인덱스와 함께 같이 제거)
         }
+        nextIndex = Random.Range(0, wayPointList.Count);
         MovewayPoint();
     }
 
     void Update()
     {
+        if (GameManager.instance.isGameOver)
+            Stop();
         if (!agent.isStopped && !enemySwatAI.isDie)   // agent가 움직이고 있다면
         {
             Quaternion rot = Quaternion.LookRotation(agent.desiredVelocity);    // NavMeshAgent가 가야되는 방향 벡터를 Quaternion 타입의 각도로 변환.
@@ -86,7 +89,8 @@ public class EnemySwatMoveAgent : MonoBehaviour
     {
         if (agent.remainingDistance <= 0.5f)    // 다음 도착지점까지 거리가 0.5 이하일 경우
         {
-            nextIndex = ++nextIndex % wayPointList.Count;
+            //nextIndex = ++nextIndex % wayPointList.Count;
+            nextIndex = Random.Range(0, wayPointList.Count);
             MovewayPoint();
         }
     }

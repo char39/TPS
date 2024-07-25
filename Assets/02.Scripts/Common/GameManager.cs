@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class GameManager : MonoBehaviour
     private Transform mainCam_tr;
     public bool isGameOver = false;
     CanvasGroup inventoryOpen;
+    public Text killText;
+    public int killCounts;
 
     void Awake()
     {
@@ -21,6 +24,21 @@ public class GameManager : MonoBehaviour
         mainCam_tr = mainCamera.transform;
         inventoryOpen = GameObject.Find("Inventory").GetComponent<CanvasGroup>();
         InventoryOnOff(false);
+        killText = GameObject.Find("Text_KillCount").GetComponent<Text>();
+        LoadGameData();
+    }
+
+    void LoadGameData()
+    {
+        killCounts = PlayerPrefs.GetInt("KillCounts", 0);
+        killText.text = $"Kill : <color=#FFAAAA>{killCounts.ToString().PadLeft(2)}</color>";
+    }
+
+    public void KillScore()
+    {
+        ++killCounts;
+        killText.text = $"Kill : <color=#FFAAAA>{killCounts.ToString().PadLeft(2)}</color>";
+        PlayerPrefs.SetInt("KillCounts", killCounts);
     }
 
     public IEnumerator CameraShake()

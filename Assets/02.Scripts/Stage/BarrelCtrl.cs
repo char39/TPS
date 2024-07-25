@@ -68,17 +68,18 @@ public class BarrelCtrl : MonoBehaviour
         GameObject eff = Instantiate(exploEffect, transform.position, Quaternion.identity);
         Destroy(eff, 2.0f);
 
-        Collider[] cols = Physics.OverlapSphere(transform.position, 20f, 1 << 7);
-        // 배럴이 본인 위치에서 원형 반경 20f 만큼 (tag아님), layer7에 있는 배럴 레이어만 cols라는 배열에 담음.
+        Collider[] cols = Physics.OverlapSphere(transform.position, 10f, 1 << 7 | 1 << 12);
+        // 배럴이 본인 위치에서 원형 반경 10f 만큼 (tag아님), layer7, 12에 있는 Barrel, Enemy 레이어만 cols라는 배열에 담음.
         foreach (Collider col in cols)
         {
             Rigidbody rb_col = col.GetComponent<Rigidbody>();
             if (rb_col != null)
             {
                 SoundManager.S_Instance.PlaySound(transform.position, clip_explo);
-                rb_col.mass = 20.0f; // 배럴 무게를 기존 60.0f에서 1.0f로 바꿈
-                rb_col.AddExplosionForce(1000, transform.position, 20f, 1200f);
+                rb_col.mass = 20.0f; // 배럴 무게를 기존 60.0f에서 20.0f로 바꿈
+                rb_col.AddExplosionForce(1000, transform.position, 10f, 1200f);
                 // 폭발력, 폭발 위치, 폭발 반경, 위로 솟구치는 힘
+                col.gameObject.SendMessage("ExplosionDie", SendMessageOptions.DontRequireReceiver);  // 적들이 폭발에 휘말리면 Die라는 함수를 호출
             }
             Invoke("BarrelMassChange", 3.0f);
         }
