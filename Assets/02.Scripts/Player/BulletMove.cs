@@ -23,8 +23,14 @@ public class BulletMove : MonoBehaviour
     }
     private void OnEnable() // 옵젝 켜질 때마다 실행
     {
+        damage = GameManager.instance.gameData.damage;
         Invoke("BulletDisable", 3.0f);
         rb.AddForce(transform.forward * speed);
+        GameManager.OnItemChange += UpdateSetup;    // 이벤트 등록
+    }
+    void UpdateSetup()
+    {
+        damage = GameManager.instance.gameData.damage;
     }
     private void OnDisable()
     {

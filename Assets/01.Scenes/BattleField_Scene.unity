@@ -479,6 +479,7 @@ GameObject:
   - component: {fileID: 98751819}
   - component: {fileID: 98751821}
   - component: {fileID: 98751823}
+  - component: {fileID: 98751824}
   m_Layer: 5
   m_Name: Item_Hp
   m_TagString: Untagged
@@ -568,6 +569,24 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &98751824
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 98751817}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be5959e3a941d460896fb6ed28571902, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemData:
+    itemType: 0
+    itemCalc: 0
+    name: HpUp
+    desc: Increase + 10 HP
+    value: 10
 --- !u!1001 &100227702
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -687,6 +706,7 @@ GameObject:
   m_Component:
   - component: {fileID: 118205653}
   - component: {fileID: 118205652}
+  - component: {fileID: 118205654}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -708,7 +728,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isGameOver: 0
   killText: {fileID: 0}
-  killCounts: 0
+  dataManager: {fileID: 0}
+  gameData:
+    killCounts: 0
+    hp: 120
+    damage: 25
+    speed: 6
+    equipItem: []
+  slotList: {fileID: 163087210}
+  itemObjects:
+  - {fileID: 98751817}
+  - {fileID: 2140906961}
+  - {fileID: 2056631756}
+  - {fileID: 291409787}
   isPaused: 0
   isOpened: 0
 --- !u!4 &118205653
@@ -726,6 +758,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &118205654
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 118205651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2102b6a5db3ab434785ec9355dd18ccb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dataPath: 
 --- !u!1 &121331648
 GameObject:
   m_ObjectHideFlags: 0
@@ -1285,6 +1330,7 @@ GameObject:
   - component: {fileID: 291409789}
   - component: {fileID: 291409791}
   - component: {fileID: 291409793}
+  - component: {fileID: 291409794}
   m_Layer: 5
   m_Name: Item_Grenade
   m_TagString: Untagged
@@ -1374,6 +1420,24 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &291409794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 291409787}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be5959e3a941d460896fb6ed28571902, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemData:
+    itemType: 2
+    itemCalc: 0
+    name: GrenadeUp
+    desc: Increase + 2 Grenade
+    value: 2
 --- !u!1 &312905182
 GameObject:
   m_ObjectHideFlags: 0
@@ -6932,6 +6996,8 @@ MonoBehaviour:
   weaponType: 0
   magazineImage: {fileID: 0}
   magazineText: {fileID: 0}
+  moveSpeed: 5
+  finalMoveSpeed: 0
   weaponIcons: []
   weaponImage: {fileID: 0}
   isRun: 0
@@ -7120,8 +7186,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96b7b264fa5214721a95f46d809c3409, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hp: 0
-  maxHp: 100
+  current_hp: 0
+  Initia_Hp: 100
 --- !u!1 &1859684237
 GameObject:
   m_ObjectHideFlags: 0
@@ -7686,6 +7752,7 @@ GameObject:
   - component: {fileID: 2056631758}
   - component: {fileID: 2056631760}
   - component: {fileID: 2056631762}
+  - component: {fileID: 2056631763}
   m_Layer: 5
   m_Name: Item_Shock
   m_TagString: Untagged
@@ -7775,6 +7842,24 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &2056631763
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2056631756}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be5959e3a941d460896fb6ed28571902, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemData:
+    itemType: 3
+    itemCalc: 1
+    name: DamageUp
+    desc: Increase Damage + 5%p
+    value: 0.05
 --- !u!1001 &2069130895
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8258,6 +8343,7 @@ GameObject:
   - component: {fileID: 2140906963}
   - component: {fileID: 2140906965}
   - component: {fileID: 2140906967}
+  - component: {fileID: 2140906968}
   m_Layer: 5
   m_Name: Item_Speed
   m_TagString: Untagged
@@ -8347,6 +8433,24 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &2140906968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2140906961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be5959e3a941d460896fb6ed28571902, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemData:
+    itemType: 1
+    itemCalc: 1
+    name: SpeedUp
+    desc: Increase Speed + 10%p
+    value: 0.1
 --- !u!1 &2143570914
 GameObject:
   m_ObjectHideFlags: 0

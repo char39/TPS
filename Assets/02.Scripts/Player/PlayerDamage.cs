@@ -8,22 +8,35 @@ public class PlayerDamage : MonoBehaviour
     private readonly string bullet_e_Tag = "E_Bullet";
     private GameObject bloodEffect;
     private Image bloodScreen;
-    public int hp = 0;
-    public int maxHp = 100;
+    public int current_hp = 0;
+    public int Initia_Hp = 100;
     private bool isDie = false;
 
     public delegate void PlayerDie_Handler();               // 델리게이트
     public static event PlayerDie_Handler OnPlayerDie;      // 델리게이트 이벤트
 
-    private Image image_hp;
+    private Image image_current_hp;
+
+    void OnEnable()
+    {
+        GameManager.OnItemChange += UpdateSetup;    // 함수를 이벤트로 등록
+    }
+
+    void UpdateSetup()
+    {
+        Initia_Hp = (int)GameManager.instance.gameData.hp;  // 게임매니저에서 최대hp가 바뀌면 실시간으로 최대hp를 변경해줌
+        current_hp += (int)GameManager.instance.gameData.hp - current_hp;   // 아이템으로 인한 최대hp에서 현재hp를 뺀 ?
+    }
 
     void Start()
     {
+        Initia_Hp = (int)GameManager.instance.gameData.hp;
+        current_hp = Initia_Hp;
+
         bloodEffect = Resources.Load<GameObject>("Effects/BulletImpactFleshBigEffects");
         bloodScreen = GameObject.Find("Canvas_UI").transform.GetChild(0).GetComponent<Image>();
         bloodScreen.color = Color.clear;
-        hp = maxHp;
-        image_hp = GameObject.Find("Canvas_UI").transform.GetChild(2).GetChild(2).GetComponent<Image>();
+        image_current_hp = GameObject.Find("Canvas_UI").transform.GetChild(2).GetChild(2).GetComponent<Image>();
         UpdateHp();
     }
 
@@ -32,10 +45,9 @@ public class PlayerDamage : MonoBehaviour
         if (col.gameObject.CompareTag(bullet_e_Tag))
         {
             ShowBloodEffect(col);
-            hp -= 5;
-            hp = Mathf.Clamp(hp, 0, 100);
+            current_hp -= 5;
             UpdateHp();
-            if (hp <= 0 && !isDie)
+            if (current_hp <= 0 && !isDie)
                 PlayerDie(col);
             StartCoroutine(ShowBloodScreen());
         }
@@ -73,13 +85,14 @@ public class PlayerDamage : MonoBehaviour
 
     void UpdateHp()
     {
-        image_hp.fillAmount = (float)hp / (float)maxHp;
-        if (image_hp.fillAmount <= 0.2f)
-            image_hp.color = Color.red;
-        else if (image_hp.fillAmount <= 0.5f)
-            image_hp.color = Color.yellow;
-        else if (image_hp.fillAmount <= 1f)
-            image_hp.color = Color.green;
+        current_hp = Mathf.Clamp(current_hp, 0, 100);
+        image_current_hp.fillAmount = (float)current_hp / (float)Initia_Hp;
+        if (image_current_hp.fillAmount <= 0.2f)
+            image_current_hp.color = Color.red;
+        else if (image_current_hp.fillAmount <= 0.5f)
+            image_current_hp.color = Color.yellow;
+        else if (image_current_hp.fillAmount <= 1f)
+            image_current_hp.color = Color.green;
     }
 
 }

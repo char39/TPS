@@ -35,9 +35,8 @@ public class Player : MonoBehaviour
     public Text magazineText;   // 탄창에 남은 총알 수
     //public float reloadTime = 2.0f; // 재장전 시간
 
-    private float moveSpeed = 5f;
-    private float moveSpeedRun = 7.5f;
-    private float finalMoveSpeed;
+    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float finalMoveSpeed;
     private Vector3 moveDir;
     private float rotSpeed = 400f;
     private Rigidbody rb;
@@ -62,6 +61,16 @@ public class Player : MonoBehaviour
     private readonly string enemyTag2 = "EnemySwat";
     private readonly string barrelTag = "Barrel";
 
+    void OnEnable()
+    {
+        GameManager.OnItemChange += UpdateSetup;    // 함수를 이벤트로 등록
+    }
+
+    void UpdateSetup()
+    {
+        moveSpeed = GameManager.instance.gameData.speed;    // 게임매니저에서 스피드가 바뀌면 실시간으로 moveSpeed를 변경해줌
+    }
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -69,6 +78,8 @@ public class Player : MonoBehaviour
         tr = GetComponent<Transform>();
         ani = GetComponent<Animation>();
         ani.Play(playerAnimation.idle.name);
+
+        moveSpeed = GameManager.instance.gameData.speed;
         finalMoveSpeed = moveSpeed;
 
         magazineImage = GameObject.Find("Canvas_UI").transform.GetChild(1).GetChild(2).GetComponent<Image>();
@@ -110,7 +121,7 @@ public class Player : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.LeftShift) && (Mathf.Abs(h) > 0.1 || Mathf.Abs(v) > 0.1))
         {
-            finalMoveSpeed = moveSpeedRun;
+            finalMoveSpeed = moveSpeed * 1.5f;
             isRun = true;
         }
         else
@@ -126,7 +137,7 @@ public class Player : MonoBehaviour
             ani.CrossFade(playerAnimation.runRight.name, 0.3f); // 0.3초 동안 천천히 전환
             if (finalMoveSpeed == moveSpeed)
                 ani[playerAnimation.runRight.name].speed = 1.0f;
-            else if (finalMoveSpeed == moveSpeedRun)
+            else if (finalMoveSpeed == moveSpeed * 1.5f)
                 ani[playerAnimation.runRight.name].speed = 1.5f;
         }
         else if (h < -0.1f)
@@ -134,7 +145,7 @@ public class Player : MonoBehaviour
             ani.CrossFade(playerAnimation.runLeft.name, 0.3f);
             if (finalMoveSpeed == moveSpeed)
                 ani[playerAnimation.runLeft.name].speed = 1.0f;
-            else if (finalMoveSpeed == moveSpeedRun)
+            else if (finalMoveSpeed == moveSpeed * 1.5f)
                 ani[playerAnimation.runLeft.name].speed = 1.5f;
         }
         else if (v > 0.1f)
@@ -142,7 +153,7 @@ public class Player : MonoBehaviour
             ani.CrossFade(playerAnimation.runForward.name, 0.3f);
             if (finalMoveSpeed == moveSpeed)
                 ani[playerAnimation.runForward.name].speed = 1.0f;
-            else if (finalMoveSpeed == moveSpeedRun)
+            else if (finalMoveSpeed == moveSpeed * 1.5f)
                 ani[playerAnimation.runForward.name].speed = 1.5f;
         }
         else if (v < -0.1f)
@@ -150,7 +161,7 @@ public class Player : MonoBehaviour
             ani.CrossFade(playerAnimation.runBackward.name, 0.3f);
             if (finalMoveSpeed == moveSpeed)
                 ani[playerAnimation.runBackward.name].speed = 1.0f;
-            else if (finalMoveSpeed == moveSpeedRun)
+            else if (finalMoveSpeed == moveSpeed * 1.5f)
                 ani[playerAnimation.runBackward.name].speed = 1.5f;
         }
         else
