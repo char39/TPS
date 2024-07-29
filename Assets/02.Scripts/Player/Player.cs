@@ -56,6 +56,7 @@ public class Player : MonoBehaviour
     [SerializeField]private Image weaponImage;      // 이미지 컴포넌트
 
     private int enemyLayer;         // 적 레이어 index
+    private int barrelLayer;
 
     private Transform firePos;
     private AudioSource source;
@@ -110,6 +111,7 @@ public class Player : MonoBehaviour
     void Update()
     {
         RaycastHit hit;
+        //if (Physics.Raycast(firePos.position, firePos.forward, out hit, 25f, 1 << ))
         if (Physics.Raycast(firePos.position, firePos.forward, out hit, 25f, 1 << enemyLayer))
             isFireAuto = true;
         else
