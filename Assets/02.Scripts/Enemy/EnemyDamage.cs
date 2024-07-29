@@ -1,16 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EnemyDamage : MonoBehaviour
 {
     private readonly string bulletTag = "Bullet";
     private GameObject bloodEffect;
     private float hp;
+    private float maxHp = 100f;
+
+    public Image hpBar;
+    public Text hpText;
 
     void OnEnable()
     {
-        hp = 100f;
+        hp = maxHp;
+        UpdateHpUI();
         bloodEffect = Resources.Load<GameObject>("Effects/BulletImpactFleshBigEffects");
     }
 
@@ -33,6 +39,8 @@ public class EnemyDamage : MonoBehaviour
     }
     void ExplosionDie()
     {
+        hp = 0f;
+        UpdateHpUI();
         GetComponent<EnemyAI>().state = EnemyAI.State.EXPLOSIONDIE;
     }
 
@@ -50,8 +58,20 @@ public class EnemyDamage : MonoBehaviour
         ShowBloodEffect((Vector3)paramsObj[0]);
         hp -= (float)paramsObj[1];
         hp = Mathf.Clamp(hp, 0f, 100f);
+        UpdateHpUI();
         //Debug.Log("" + hp);
         if (hp <= 0f)
             Die();
+    }
+    void UpdateHpUI()
+    {
+        hpBar.fillAmount = hp / maxHp;
+        hpText.text = $"HP : <color=#FFAAAA>{hp}</color>";
+        if (hpBar.fillAmount < 0.2f)
+            hpBar.color = Color.red;
+        else if (hpBar.fillAmount < 0.5f)
+            hpBar.color = Color.yellow;
+        else
+            hpBar.color = Color.green;
     }
 }
