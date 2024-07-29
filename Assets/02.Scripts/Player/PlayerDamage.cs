@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DataInfo;
 
 public class PlayerDamage : MonoBehaviour
 {
@@ -24,8 +25,8 @@ public class PlayerDamage : MonoBehaviour
 
     void UpdateSetup()
     {
+        current_hp += (int)GameManager.instance.gameData.hp - Initia_Hp;
         Initia_Hp = (int)GameManager.instance.gameData.hp;  // 게임매니저에서 최대hp가 바뀌면 실시간으로 최대hp를 변경해줌
-        current_hp += (int)GameManager.instance.gameData.hp - current_hp;   // 아이템으로 인한 최대hp에서 현재hp를 뺀 ?
     }
 
     void Start()
@@ -45,7 +46,7 @@ public class PlayerDamage : MonoBehaviour
         if (col.gameObject.CompareTag(bullet_e_Tag))
         {
             ShowBloodEffect(col);
-            current_hp -= 5;
+            current_hp -= 1;
             UpdateHp();
             if (current_hp <= 0 && !isDie)
                 PlayerDie(col);
@@ -85,7 +86,7 @@ public class PlayerDamage : MonoBehaviour
 
     void UpdateHp()
     {
-        current_hp = Mathf.Clamp(current_hp, 0, 100);
+        //current_hp = Mathf.Clamp(current_hp, 0, 100);
         image_current_hp.fillAmount = (float)current_hp / (float)Initia_Hp;
         if (image_current_hp.fillAmount <= 0.2f)
             image_current_hp.color = Color.red;

@@ -15,7 +15,8 @@ public class GameManager : MonoBehaviour
     //public int killCounts;
     [Header("DataManager")]
     [SerializeField] private DataManager dataManager;
-    public GameData gameData;
+    //public GameData gameData;     // GameData.cs 대신 GameDataObject.cs를 쓰려고 주석
+    public GameDataObject gameData;
 
     // 인벤토리 아이템이 변경 되었을 때 발생시킬 이벤트 정의
     public delegate void ItemChangeDelegate();
@@ -54,12 +55,14 @@ public class GameManager : MonoBehaviour
 
     void LoadGameData()
     {
-        GameData data = dataManager.Load();
-        gameData.hp = data.hp;
-        gameData.damage = data.damage;
-        gameData.speed = data.speed;
-        gameData.killCounts = data.killCounts;
-        gameData.equipItem = data.equipItem;
+        // GameData data = dataManager.Load();
+        // gameData.hp = data.hp;
+        // gameData.damage = data.damage;
+        // gameData.speed = data.speed;
+        // gameData.killCounts = data.killCounts;
+        // gameData.equipItem = data.equipItem;
+            // GameDataObject.cs를 쓰면서 주석처리함. ScriptableObject는 전역 접근이 가능하기에 별도로 로드하는 과정이 필요치 않다.
+
         if (gameData.equipItem.Count > 0)
             InventorySetUp();
         killText.text = $"Kill : <color=#FFAAAA>{gameData.killCounts.ToString().PadLeft(2)}</color>";
@@ -82,7 +85,8 @@ public class GameManager : MonoBehaviour
     }
     void SaveGameData()
     {
-        dataManager.Save(gameData);
+        //dataManager.Save(gameData);
+        UnityEditor.EditorUtility.SetDirty(gameData);   // ScriptableObject를 상속받은 클래스는 이 함수를 통해 저장해야 한다. .asset 파일에 저장
     }
     public void AddItem(Item item)              // 인벤토리 UI에서 특정 아이템 선택시 효과 적용
     {
@@ -114,6 +118,7 @@ public class GameManager : MonoBehaviour
                 break;
         }
         OnItemChange();     // 델리게이트 이벤트. 인벤토리 아이템이 변경 되었을 때 발생.
+        UnityEditor.EditorUtility.SetDirty(gameData);
     }
     public void RemoveItem(Item item)           // 인벤토리 UI에서 특정 아이템을 제거하면 아이템의 효과를 제거
     {
@@ -122,29 +127,30 @@ public class GameManager : MonoBehaviour
         gameData.equipItem.Remove(item);
         switch (item.itemType)                          // 아이템 종류에 따라서 값 적용
         {
-            case Item.ItemType.HP:                          // HP 아이템이라면
+            case Item.ItemType.HP:
                 if (item.itemCalc == Item.ItemCalc.VALUE)       // 아이템 계산 방식이 VALUE라면
-                    gameData.hp -= item.value;                  // 아이템의 값을 더한다.
+                    gameData.hp -= item.value;
                 else
-                    gameData.hp /= 1.0f + item.value;    // 아이템 계산 방식이 PERSENT라면, 최대 HP의 아이템 값을 곱한 값을 더한다.
+                    gameData.hp /= 1.0f + item.value;
                 break;
             case Item.ItemType.SPEED:
                 if (item.itemCalc == Item.ItemCalc.VALUE)       // 아이템 계산 방식이 VALUE라면
-                    gameData.speed += item.value;                  // 아이템의 값을 더한다.
+                    gameData.speed -= item.value;
                 else
-                    gameData.speed /= 1.0f + item.value;    // 아이템 계산 방식이 PERSENT라면, 최대 HP의 아이템 값을 곱한 값을 더한다.
+                    gameData.speed /= 1.0f + item.value;
                 break;
             case Item.ItemType.GRENADE:
 
                 break;
             case Item.ItemType.DAMAGE:
                 if (item.itemCalc == Item.ItemCalc.VALUE)       // 아이템 계산 방식이 VALUE라면
-                    gameData.damage += item.value;                  // 아이템의 값을 더한다.
+                    gameData.damage -= item.value;
                 else
-                    gameData.damage /= 1.0f + item.value;    // 아이템 계산 방식이 PERSENT라면, 최대 HP의 아이템 값을 곱한 값을 더한다.
+                    gameData.damage /= 1.0f + item.value;
                 break;
         }
         OnItemChange();     // 델리게이트 이벤트. 인벤토리 아이템이 변경 되었을 때 발생.
+        UnityEditor.EditorUtility.SetDirty(gameData);
     }
 
     public void KillScore()

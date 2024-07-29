@@ -729,12 +729,7 @@ MonoBehaviour:
   isGameOver: 0
   killText: {fileID: 0}
   dataManager: {fileID: 0}
-  gameData:
-    killCounts: 0
-    hp: 120
-    damage: 25
-    speed: 6
-    equipItem: []
+  gameData: {fileID: 11400000, guid: 834328a0475b148879529bd94c240105, type: 2}
   slotList: {fileID: 163087210}
   itemObjects:
   - {fileID: 98751817}

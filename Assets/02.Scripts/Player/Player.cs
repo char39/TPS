@@ -100,6 +100,7 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        Debug.DrawRay(firePos.position, firePos.forward * 25f, Color.red);
         if (EventSystem.current.IsPointerOverGameObject()) return;  // UI 클릭 시 플레이어 움직임 X. 이벤트시스템.현재.마우스가옵젝위에존재시, 메서드종료.
         PlayerMove_All();
         StartCoroutine(PlayerGunFire());
@@ -196,18 +197,6 @@ public class Player : MonoBehaviour
         isFire = true;
         muzzFlash.Play();
         LazerBeam.instance.PlayerLazerBeam();
-        /*  1. 총알 Projectile movement 방식
-        var bullets = ObjectPoolingManager_script.poolingManager.GetBulletPool();   // 비활성화 된 몇 번째 총알 반환
-        if (bullets != null)    // 총알이 10개 다 활성화 되어있으면 작동X
-        {
-            bullets.transform.position = firePos.position;
-            bullets.transform.rotation = firePos.rotation;
-            bullets.SetActive(true);
-            source.PlayOneShot(audioClip, 1.0f);
-            muzzFlash.Play();
-            yield return new WaitForSeconds(0.1f);
-        }
-        */
         RaycastHit hit; // 광선이 오브젝트에 충돌할 경우 충돌 지점이나 거리 등을 알려주는 광선 구조체
         if (Physics.Raycast(firePos.position, firePos.forward, out hit, 20f))    // 광선을 쐈을 때 반경 안에서 맞았는지 여부
         {
