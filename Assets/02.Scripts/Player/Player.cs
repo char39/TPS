@@ -57,6 +57,8 @@ public class Player : MonoBehaviour
 
     private int enemyLayer;         // 적 레이어 index
     private int barrelLayer;
+    private int boxLayer;
+    private int layerMask;
 
     private Transform firePos;
     private AudioSource source;
@@ -105,22 +107,39 @@ public class Player : MonoBehaviour
         muzzFlash.Stop();
 
         enemyLayer = LayerMask.NameToLayer("Enemy");    // 레이어 이름을 index 값으로 반환. 유니티에서 index 순서가 바뀌어도 상관무
+        barrelLayer = LayerMask.NameToLayer("Barrel");
+        boxLayer = LayerMask.NameToLayer("Boxes");
+        layerMask = 1 << enemyLayer | 1 << barrelLayer | 1 << boxLayer;         // 레이어 마스크를 이용해 레이어를 묶어서 사용
         //enemyLayer = LayerMask.LayerToName(12);       // 반대의 경우도 있다   그냥 예시
     }
 
     void Update()
     {
-        RaycastHit hit;
-        //if (Physics.Raycast(firePos.position, firePos.forward, out hit, 25f, 1 << ))
-        if (Physics.Raycast(firePos.position, firePos.forward, out hit, 25f, 1 << enemyLayer))
-            isFireAuto = true;
-        else
-            isFireAuto = false;
-
+        isFireAuto = Check_isFireAuto();
         if (EventSystem.current.IsPointerOverGameObject()) return;  // UI 클릭 시 플레이어 움직임 X. 이벤트시스템.현재.마우스가옵젝위에존재시, 메서드종료.
         PlayerMove_All();
-        //StartCoroutine(PlayerGunFire());    // 마우스를 직접 눌러 발사
+        StartCoroutine(PlayerGunFire());    // 마우스를 직접 눌러 발사
         StartCoroutine(PLayerGunFireAuto());
+    }
+
+    private bool Check_isFireAuto()
+    {
+        RaycastHit hit;
+        RaycastHit obstacleHit;
+        if (Physics.Raycast(firePos.position, firePos.forward, out hit, 25f, 1 << enemyLayer))      // Raycast가 적에 닿았을 때
+        {
+            if (Physics.Raycast(firePos.position, (hit.point - firePos.position).normalized, out obstacleHit, Vector3.Distance(firePos.position, hit.point)))
+            {
+                if (obstacleHit.collider.gameObject.layer != enemyLayer)
+                    return false;
+                else
+                    return true;
+            }
+            else
+                return true;
+        }
+        else
+            return false;
     }
 
     private void PlayerMove_All()   // 플레이어의 움직이는 모든 것

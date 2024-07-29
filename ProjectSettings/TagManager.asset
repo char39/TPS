@@ -13,6 +13,7 @@ TagManager:
   - Enemy
   - E_Bullet
   - EnemySwat
+  - Boxes
   layers:
   - Default
   - TransparentFX
@@ -28,7 +29,7 @@ TagManager:
   - Effect
   - Enemy
   - E_Bullet
-  - 
+  - Boxes
   - 
   - 
   - 
