@@ -128,9 +128,9 @@ public class Player : MonoBehaviour
         RaycastHit obstacleHit;
         if (Physics.Raycast(firePos.position, firePos.forward, out hit, 25f, 1 << enemyLayer))      // Raycast가 적에 닿았을 때
         {
-            if (Physics.Raycast(firePos.position, (hit.point - firePos.position).normalized, out obstacleHit, Vector3.Distance(firePos.position, hit.point)))
+            if (Physics.Raycast(firePos.position, (hit.point - firePos.position).normalized, out obstacleHit, Vector3.Distance(firePos.position, hit.point)))   // Raycast가 장애물에 충돌했을 때
             {
-                if (obstacleHit.collider.gameObject.layer != enemyLayer)
+                if (obstacleHit.collider.gameObject.layer != enemyLayer)    // 적이 가리는 장애물이 있을 때
                     return false;
                 else
                     return true;
