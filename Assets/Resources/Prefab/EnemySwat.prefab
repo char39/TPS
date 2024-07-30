@@ -669,6 +669,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: af19cc6a5ba952b4ba9d20ce847a2058, type: 3}
       insertIndex: -1
       addedObject: {fileID: 657894525675319272}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: af19cc6a5ba952b4ba9d20ce847a2058, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -6688850635424672500}
   m_SourcePrefab: {fileID: 100100000, guid: af19cc6a5ba952b4ba9d20ce847a2058, type: 3}
 --- !u!4 &321976921683408691 stripped
 Transform:
@@ -815,6 +818,27 @@ MonoBehaviour:
   wayPointList: []
   nextIndex: 0
   agent: {fileID: 0}
+--- !u!114 &-6688850635424672500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2625889474762201560}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 000357ef22cd64ad59fc5a2ef51f8b4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  viewRange: 15
+  viewAngle: 120
+  enemyTr: {fileID: 0}
+  playerTr: {fileID: 0}
+  layerMask: 0
+  playerLayer: 0
+  boxesLayer: 0
+  barrelLayer: 0
+  wallLayer: 0
 --- !u!4 &3403270220776932194 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: af19cc6a5ba952b4ba9d20ce847a2058, type: 3}

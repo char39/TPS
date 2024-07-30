@@ -50,13 +50,9 @@ public class FollowCamera : MonoBehaviour
         if (Physics.Raycast(camTr.position, castDir, out hit, Mathf.Infinity))
         {
             if (!hit.collider.CompareTag("Player"))
-            {
                 height = Mathf.Lerp(height, maxHeight, Time.deltaTime * 5.0f);
-            }
             else
-            {
                 height = Mathf.Lerp(height, originHeight, Time.deltaTime * 5.0f);
-            }
         }
     }
 
@@ -67,12 +63,10 @@ public class FollowCamera : MonoBehaviour
 
     private void CameraFollow()         // 카메라가 타겟을 대상으로 부드럽게 움직이는 메서드
     {
-        var camPos = target.position - (Vector3.forward * distance) + (Vector3.up * height);    // 타겟 포지션에서 distance만큼 뒤에 위치 + height 높이 만큼 위에 위치
+        var camPos = target.position - (target.forward * distance) + (target.up * height);      // 타겟 포지션에서 distance만큼 뒤에 위치 + height 높이 만큼 위에 위치
         camTr.position = Vector3.Slerp(camTr.position, camPos, Time.deltaTime * moveDamping);               // 곡면 보간. 본인 위치에서, camPos까지, moveDamping * 시간만큼 부드럽게 움직임
         camTr.rotation = Quaternion.Slerp(camTr.rotation, target.rotation, Time.deltaTime * rotDamping);    // 본인 회전값에서 타겟의 회전
         camTr.LookAt(target.position + (target.up * targetOffset));                             // 타겟 위치에서 targetOffset만큼 위로 올림.
-
-        Debug.Log($"{target.rotation} + {camTr.rotation}");
     }
     /*
     private void OnDrawGizmos()         // Scene에서 Debug상의 여러 색상이나 선 등을 그려주는 메서드. 콜백 함수

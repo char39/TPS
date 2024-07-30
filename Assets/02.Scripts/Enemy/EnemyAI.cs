@@ -13,8 +13,11 @@ public class EnemyAI : MonoBehaviour
     private Transform playerTr;    // 거리를 재기 위해 선언
     private Transform enemyTr;     // ""
     private Animator animator;
-    private float attackDist = 10.0f;         // 5.0f 범위에 들면 공격
-    private float traceDist = 20.0f;         // 10.0f 범위에 들면 추적
+
+    private EnemyFOV enemyFOV;
+
+    private float attackDist = 7.0f;         // 범위에 들면 공격
+    private float traceDist = 14.0f;         // 범위에 들면 추적
     public bool isDie = false;              // 사망 여부
     private WaitForSeconds waitTime;        // 기다리는 값 선언
     private EnemyMoveAgent enemyMoveAgent;
@@ -37,6 +40,7 @@ public class EnemyAI : MonoBehaviour
         enemyTr = GetComponent<Transform>();
         enemyFire = GetComponent<EnemyFire>();
         animator = GetComponent<Animator>();
+        enemyFOV = GetComponent<EnemyFOV>();
         waitTime = new WaitForSeconds(0.3f);    // 0.3초 기다리는 값 할당
     }
 
@@ -67,6 +71,7 @@ public class EnemyAI : MonoBehaviour
 
     IEnumerator CheckState()    // 현재 거리에 따라 열거형 상수 State 값을 지정. 그 뒤 waitTime 만큼 대기.
     {
+        yield return new WaitForSeconds(1.0f);  // 옵젝 풀링에 생성시 다른 스크립트의 초기화를 위해 대기
         if (GameManager.instance.isGameOver)
             state = State.GAMEOVER;
         while (!isDie && !GameManager.instance.isGameOver)
@@ -75,8 +80,13 @@ public class EnemyAI : MonoBehaviour
                 yield break;    // 열거형 상수 State 값이 DIE면 이 함수 종료.
             float dist = (playerTr.position - enemyTr.position).magnitude;
             if (dist <= attackDist)
-                state = State.ATTACK;
-            else if (dist <= traceDist)
+            {
+                if (enemyFOV.isViewPlayer())
+                    state = State.ATTACK;
+                //else
+                //    state = State.TRACE;
+            }
+            else if (enemyFOV.isTracePlayer())
                 state = State.TRACE;
             else
                 state = State.PTROL;

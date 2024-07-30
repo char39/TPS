@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     private Camera mainCamera;
     private Transform mainCam_tr;
-    public bool isGameOver = false;
+    public bool isGameOver;
     CanvasGroup inventoryOpen;
     public Text killText;
     //public int killCounts;
@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
+        isGameOver = false;
         if (instance == null)
             instance = this;
         else if (instance != this)

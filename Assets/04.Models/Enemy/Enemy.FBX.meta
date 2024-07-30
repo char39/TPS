@@ -246,6 +246,7 @@ ModelImporter:
     animationWrapMode: 0
     extraExposedTransformPaths:
     - pelvis/stomach/Ribs/chest/Rshoulder/Rarm/Rforearm/Rwrist/Rweaponholder
+    - pelvis/stomach/Ribs/chest/neck/head
     extraUserProperties: []
     clipAnimations: []
     isReadable: 1

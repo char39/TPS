@@ -32,7 +32,7 @@ public class EnemyFire : MonoBehaviour
         animator = GetComponent<Animator>();
         playerTr = GameObject.FindGameObjectWithTag("Player").transform;
         enemyTr = GetComponent<Transform>();
-        firePos = transform.GetChild(3).GetChild(0).GetChild(0).transform;
+        firePos = transform.GetChild(4).GetChild(0).GetChild(0).transform;
         curBullet = maxBullet;
         reloadws = new WaitForSeconds(reloadTime);
         reloadClip = Resources.Load<AudioClip>("Audio/p_reload");

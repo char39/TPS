@@ -13,8 +13,11 @@ public class EnemySwatAI : MonoBehaviour
     private Transform playerTr;
     private Transform enemySwatTr;
     private Animator animator;
-    private float attackDist = 10.0f;
-    private float traceDist = 20.0f;
+
+    private EnemyFOV enemyFOV;
+
+    private float attackDist = 7.0f;
+    private float traceDist = 14.0f;
     public bool isDie = false;
     private WaitForSeconds waitTime;
     private EnemySwatMoveAgent enemySwatMoveAgent;
@@ -37,6 +40,7 @@ public class EnemySwatAI : MonoBehaviour
         enemySwatTr = GetComponent<Transform>();
         enemySwatFire = GetComponent<EnemySwatFire>();
         animator = GetComponent<Animator>();
+        enemyFOV = GetComponent<EnemyFOV>();
         waitTime = new WaitForSeconds(0.3f);
     }
 
@@ -67,6 +71,7 @@ public class EnemySwatAI : MonoBehaviour
 
     IEnumerator CheckState()
     {
+        yield return new WaitForSeconds(1.0f);
         if (GameManager.instance.isGameOver)
             state = State.GAMEOVER;
         while (!isDie && !GameManager.instance.isGameOver)
@@ -75,8 +80,13 @@ public class EnemySwatAI : MonoBehaviour
                 yield break;
             float dist = (playerTr.position - enemySwatTr.position).magnitude;
             if (dist <= attackDist)
-                state = State.ATTACK;
-            else if (dist <= traceDist)
+            {
+                if (enemyFOV.isViewPlayer())
+                    state = State.ATTACK;
+                //else
+                //    state = State.TRACE;
+            }
+            else if (enemyFOV.isTracePlayer())
                 state = State.TRACE;
             else
                 state = State.PTROL;
