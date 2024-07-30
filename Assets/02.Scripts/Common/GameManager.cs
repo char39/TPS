@@ -87,7 +87,9 @@ public class GameManager : MonoBehaviour
     void SaveGameData()
     {
         //dataManager.Save(gameData);
+        #if UNITY_EDITOR
         UnityEditor.EditorUtility.SetDirty(gameData);   // ScriptableObject를 상속받은 클래스는 이 함수를 통해 저장해야 한다. .asset 파일에 저장
+        #endif
     }
     public void AddItem(Item item)              // 인벤토리 UI에서 특정 아이템 선택시 효과 적용
     {
@@ -119,7 +121,9 @@ public class GameManager : MonoBehaviour
                 break;
         }
         OnItemChange();     // 델리게이트 이벤트. 인벤토리 아이템이 변경 되었을 때 발생.
+        #if UNITY_EDITOR
         UnityEditor.EditorUtility.SetDirty(gameData);
+        #endif
     }
     public void RemoveItem(Item item)           // 인벤토리 UI에서 특정 아이템을 제거하면 아이템의 효과를 제거
     {
@@ -151,7 +155,9 @@ public class GameManager : MonoBehaviour
                 break;
         }
         OnItemChange();     // 델리게이트 이벤트. 인벤토리 아이템이 변경 되었을 때 발생.
+        #if UNITY_EDITOR
         UnityEditor.EditorUtility.SetDirty(gameData);
+        #endif
     }
 
     public void KillScore()

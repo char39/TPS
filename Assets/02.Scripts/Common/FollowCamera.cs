@@ -42,6 +42,18 @@ public class FollowCamera : MonoBehaviour
 
     void Update()
     {
+        UpdateCameraHeight();
+    }
+
+    void LateUpdate()   // LateUpdate() : 모든 Update 메서드가 호출된 후에 실행되는 메서드.
+    {
+        CameraFollow();
+    }
+
+    private void UpdateCameraHeight()
+    {
+        if (!target)
+            return;
         Vector3 castTarget = target.position + (target.up * castOffset);
         Vector3 castDir = (castTarget - camTr.position).normalized;   // 방향
         //float castDist = (castTarget - camTr.position).magnitude;   // 거리
@@ -55,12 +67,6 @@ public class FollowCamera : MonoBehaviour
                 height = Mathf.Lerp(height, originHeight, Time.deltaTime * 5.0f);
         }
     }
-
-    void LateUpdate()   // LateUpdate() : 모든 Update 메서드가 호출된 후에 실행되는 메서드.
-    {
-        CameraFollow();
-    }
-
     private void CameraFollow()         // 카메라가 타겟을 대상으로 부드럽게 움직이는 메서드
     {
         var camPos = target.position - (target.forward * distance) + (target.up * height);      // 타겟 포지션에서 distance만큼 뒤에 위치 + height 높이 만큼 위에 위치
