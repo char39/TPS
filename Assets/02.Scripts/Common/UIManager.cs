@@ -8,9 +8,7 @@ public class UIManager : MonoBehaviour
 {
     public void OnClickPlayButton()
     {
-        SceneManager.LoadScene("Level_1");
-        SceneManager.LoadScene("BattleField_Scene", LoadSceneMode.Additive); // LoadSceneMode.Additive : 씬을 추가로 로드
-        //SceneManager.LoadScene("BattleField_Scene", LoadSceneMode.Single); // LoadSceneMode.Single : 기존에 로드된 모든 씬들을 삭제 후 씬을 로드
+        SceneManager.LoadScene("SceneLoader");
     }
     public void OnClickQuitButton()
     {
@@ -21,3 +19,8 @@ public class UIManager : MonoBehaviour
         #endif
     }
 }
+
+
+//SceneManager.LoadScene("Level_1");
+//SceneManager.LoadScene("BattleField_Scene", LoadSceneMode.Additive); // LoadSceneMode.Additive : 씬을 추가로 로드
+//SceneManager.LoadScene("BattleField_Scene", LoadSceneMode.Single); // LoadSceneMode.Single : 기존에 로드된 모든 씬들을 삭제 후 씬을 로드
