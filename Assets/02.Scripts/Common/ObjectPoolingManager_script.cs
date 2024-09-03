@@ -10,10 +10,10 @@ public class ObjectPoolingManager_script : MonoBehaviourPunCallbacks
     private GameObject e_bulletPrefab;
     private GameObject enemyPrefab;
     private GameObject enemySwatPrefab;
-    private int maxPool = 1;    //오브젝트 풀에 한번에 생성 할 개수
+    private int maxPool = 1;    //오브젝트 풀에 생성 할 개수
     private int maxPool_e = 25;
     private int maxPool_Enemy = 10;
-    private int maxPool_EnemySwat = 0;
+    private int maxPool_EnemySwat = 10;
     public List<GameObject> bulletPoolList;
     public List<GameObject> e_bulletPoolList;
     public List<GameObject> enemyPoolList;
@@ -26,20 +26,19 @@ public class ObjectPoolingManager_script : MonoBehaviourPunCallbacks
             poolingManager = this;
         else if (poolingManager != this)
             Destroy(gameObject);
-
+        DontDestroyOnLoad(gameObject);
         bulletPrefab = Resources.Load<GameObject>("Prefab/Bullet");
         e_bulletPrefab = Resources.Load<GameObject>("Prefab/E_Bullet");
         enemyPrefab = Resources.Load<GameObject>("Prefab/Enemy");
         enemySwatPrefab = Resources.Load<GameObject>("Prefab/EnemySwat");
-        CreateBulletPool(); //오브젝트 풀링 생성 함수
-        CreateE_BulletPool();
     }
     
     void Start()
     {
-        FindSpawnPoint();
+        if (!PhotonNetwork.IsMasterClient) return;
+        CreateE_BulletPool();
         CreateEnemyPool();
-        CreateEnemySwatPool();
+        FindSpawnPoint();
     }
 
     void FindSpawnPoint()
@@ -51,10 +50,9 @@ public class ObjectPoolingManager_script : MonoBehaviourPunCallbacks
         if (spawnPointList.Count > 0)
         {
             StartCoroutine(CreateEnemy());
-            StartCoroutine(CreateEnemySwat());
+            //StartCoroutine(CreateEnemySwat());
         }
     }
-    [PunRPC]
     IEnumerator CreateEnemy()
     {
         while (!GameManager.instance.isGameOver)
@@ -96,7 +94,6 @@ public class ObjectPoolingManager_script : MonoBehaviourPunCallbacks
         }
     }
 
-    [PunRPC]
     void CreateBulletPool()
     {
         GameObject playerBulletGroup = new GameObject("PlayerBulletGroup");
@@ -122,10 +119,9 @@ public class ObjectPoolingManager_script : MonoBehaviourPunCallbacks
 
     void CreateE_BulletPool()
     {
-        GameObject enemyBulletGroup = new GameObject("EnemyBulletGroup");
         for (int i = 0; i < maxPool_e; i++)
         {
-            var bullets = Instantiate(e_bulletPrefab, enemyBulletGroup.transform);
+            GameObject bullets = PhotonNetwork.Instantiate("E_Bullet", Vector3.zero, Quaternion.identity);
             bullets.name = $"e_{(i + 1).ToString()} 발";
             bullets.SetActive(false);
             e_bulletPoolList.Add(bullets);
@@ -143,13 +139,11 @@ public class ObjectPoolingManager_script : MonoBehaviourPunCallbacks
         return null;    // 아니면 null
     }
 
-    [PunRPC]
     void CreateEnemyPool()
     {
-        GameObject enemyGroup = new GameObject("EnemyGroup");
         for (int i = 0; i < maxPool_Enemy; i++)
         {
-            var enemys = Instantiate(enemyPrefab, enemyGroup.transform);
+            GameObject enemys = PhotonNetwork.Instantiate("Enemy", Vector3.zero, Quaternion.identity);
             enemys.name = $"enemy {(i + 1).ToString()}";
             enemys.SetActive(false);
             enemyPoolList.Add(enemys);
@@ -165,6 +159,15 @@ public class ObjectPoolingManager_script : MonoBehaviourPunCallbacks
             }
         }
         return null;    // 아니면 null
+    }
+
+    [PunRPC]
+    public void SyncEnemyState(int index, bool state)
+    {
+        if (index >= 0 && index < enemyPoolList.Count)
+        {
+            enemyPoolList[index].SetActive(state);
+        }
     }
 
     void CreateEnemySwatPool()
@@ -189,4 +192,5 @@ public class ObjectPoolingManager_script : MonoBehaviourPunCallbacks
         }
         return null;
     }
+
 }

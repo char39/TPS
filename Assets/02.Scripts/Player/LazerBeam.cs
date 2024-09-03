@@ -19,10 +19,10 @@ public class LazerBeam : MonoBehaviourPun
         line.enabled = false;
     }
 
-    [PunRPC]
     public void PlayerLazerBeam()
     {
         if (EventSystem.current.IsPointerOverGameObject()) return;
+        if (!photonView.IsMine) return;
         Ray ray = new Ray(tr.position + (Vector3.up * 0.02f), tr.forward);  // 광선을 미리 생성
         RaycastHit hit;
         Debug.DrawRay(ray.origin, ray.direction * 100f, Color.yellow);
@@ -35,6 +35,7 @@ public class LazerBeam : MonoBehaviourPun
         StartCoroutine(ShowLazerBeam());
 
     }
+    [PunRPC]
     IEnumerator ShowLazerBeam()
     {
         line.enabled = true;

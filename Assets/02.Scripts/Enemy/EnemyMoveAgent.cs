@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
 
-public class EnemyMoveAgent : MonoBehaviour
+public class EnemyMoveAgent : MonoBehaviourPun, IPunObservable
 {
     
     // 패트롤 지점을 담기 위한 List Generic(일반형) 변수
@@ -14,6 +15,9 @@ public class EnemyMoveAgent : MonoBehaviour
     [SerializeField] private NavMeshAgent agent;
     private Rigidbody rb;
     private EnemyAI enemyAI;
+
+    private Vector3 currentPos;
+    private Quaternion currentRot;
 
     private readonly float patrollSpeed = 2.5f;
     private readonly float traceSpeed = 4.0f;
@@ -70,39 +74,34 @@ public class EnemyMoveAgent : MonoBehaviour
         }
         nextIndex = Random.Range(0, wayPointList.Count);
         MovewayPoint();
+
+        currentPos = enemyTr.position;
+        currentRot = enemyTr.rotation;
     }
 
     void Update()
     {
         if (GameManager.instance.isGameOver)
             Stop();
-        if (!agent.isStopped && !enemyAI.isDie)   // agent가 움직이고 있다면
+        if (PhotonNetwork.IsConnected)
         {
-            Quaternion rot = Quaternion.LookRotation(agent.desiredVelocity);    // NavMeshAgent가 가야되는 방향 벡터를 Quaternion 타입의 각도로 변환.
-            enemyTr.rotation = Quaternion.Slerp(enemyTr.rotation, rot, Time.deltaTime * damping);   // 보간 함수를 이용하여 부드럽게 회전시킴.
+            if (!agent.isStopped && !enemyAI.isDie)   // agent가 움직이고 있다면
+            {
+                Quaternion rot = Quaternion.LookRotation(agent.desiredVelocity);    // NavMeshAgent가 가야되는 방향 벡터를 Quaternion 타입의 각도로 변환.
+                enemyTr.rotation = Quaternion.Slerp(enemyTr.rotation, rot, Time.deltaTime * damping);   // 보간 함수를 이용하여 부드럽게 회전시킴.
+            }
+            if (!_patrolling) return;
+            FindWayPoint();
+            if (!photonView.IsMine)
+            {
+                enemyTr.position = Vector3.Lerp(enemyTr.position, currentPos, Time.deltaTime * 10.0f);
+                enemyTr.rotation = Quaternion.Slerp(enemyTr.rotation, currentRot, Time.deltaTime * 10.0f);
+            }
         }
-        if (!_patrolling) return;
-        FindWayPoint();
     }
 
     private void FindWayPoint()             // 수색 경로를 탐색
     {
-        /* 이런 방법도 있다 (1)
-                float dist = Vector3.Distance(transform.position, wayPointList[nextIndex].position);
-                if (dist <= 0.5f)    // 다음 도착지점까지 거리가 0.5 이하일 경우
-                {
-                    nextIndex = ++nextIndex % wayPointList.Count;
-                    MovewayPoint();
-                }
-                */
-        /* 이런 방법도 있다 (2)
-        float dist = (wayPointList[nextIndex].position - transform.position).magnitude;     // (목표 지점 - 본인 위치).magnitude : 거리 값으로 바뀜
-        if (dist <= 0.5f)    // 다음 도착지점까지 거리가 0.5 이하일 경우
-        {
-            nextIndex = ++nextIndex % wayPointList.Count;
-            MovewayPoint();
-        }
-        */
         if (agent.remainingDistance <= 0.5f)    // 다음 도착지점까지 거리가 0.5 이하일 경우
         {
             //nextIndex = ++nextIndex % wayPointList.Count;
@@ -132,5 +131,19 @@ public class EnemyMoveAgent : MonoBehaviour
         agent.destination = Vector3.zero;
         rb.isKinematic = true;
         _patrolling = false;
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(enemyTr.position);
+            stream.SendNext(enemyTr.rotation);
+        }
+        else
+        {
+            currentPos = (Vector3)stream.ReceiveNext();
+            currentRot = (Quaternion)stream.ReceiveNext();
+        }
     }
 }

@@ -846,6 +846,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   state: 0
   isDie: 0
+  curisDie: 0
 --- !u!114 &5835263613863628345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -916,10 +917,12 @@ MonoBehaviour:
   ObservedComponentsFoldoutOpen: 1
   Group: 0
   prefixField: -1
-  Synchronization: 1
+  Synchronization: 2
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: 9009219086800976730}
+  - {fileID: 7825562571943994822}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0

@@ -48,6 +48,63 @@ public class EnemyAI : MonoBehaviourPun, IPunObservable
         waitTime = new WaitForSeconds(0.3f);    // 0.3초 기다리는 값 할당
     }
 
+
+
+
+    void Start()
+    {
+        waitTime = new WaitForSeconds(0.3f);
+        StartCoroutine(CheckState());
+        
+    }
+
+/*     IEnumerator CheckState()
+    {
+        while (!isDie)
+        {
+            yield return waitTime;
+
+            if (PhotonNetwork.IsMasterClient)
+            {
+                CheckStateRPC();
+            }
+        }
+    } */
+
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext((int)state);
+            stream.SendNext(isDie);
+        }
+        else
+        {
+            state = (State)stream.ReceiveNext();
+            isDie = (bool)stream.ReceiveNext();
+        }
+    }
+
+    public void SyncEnemyState(int index, bool state)
+    {
+        photonView.RPC("SyncEnemyStateRPC", RpcTarget.All, index, state);
+    }
+
+    [PunRPC]
+    void SyncEnemyStateRPC(int index, bool state)
+    {
+        ObjectPoolingManager_script.poolingManager.SyncEnemyState(index, state);
+    }
+
+
+
+
+
+
+
+
+
     void OnEnable()
     {
         if (!GameManager.instance.isGameOver)
@@ -86,23 +143,31 @@ public class EnemyAI : MonoBehaviourPun, IPunObservable
             state = State.GAMEOVER;
         while (!isDie && !GameManager.instance.isGameOver)
         {
-            if (state == State.DIE || state == State.EXPLOSIONDIE)
-                yield break;    // 열거형 상수 State 값이 DIE면 이 함수 종료.
-            float dist = (playerTr.position - enemyTr.position).magnitude;
-            if (dist <= attackDist)
-            {
-                if (enemyFOV.isViewPlayer())
-                    state = State.ATTACK;
-                //else
-                //    state = State.TRACE;
-            }
-            else if (enemyFOV.isTracePlayer())
-                state = State.TRACE;
-            else
-                state = State.PTROL;
             yield return waitTime;
+            if (PhotonNetwork.IsMasterClient)
+                CheckStateRPC();
         }
     }
+
+    [PunRPC]
+    void CheckStateRPC()
+    {
+        if (state == State.DIE || state == State.EXPLOSIONDIE)
+            return;    // 열거형 상수 State 값이 DIE면 이 함수 종료.
+        float dist = (playerTr.position - enemyTr.position).magnitude;
+        if (dist <= attackDist)
+        {
+            if (enemyFOV.isViewPlayer())
+                state = State.ATTACK;
+            //else
+            //    state = State.TRACE;
+        }
+        else if (enemyFOV.isTracePlayer())
+            state = State.TRACE;
+        else
+            state = State.PTROL;
+    }
+
     IEnumerator Action()        // waitTime 만큼 대기한 후, switch 실행
     {
         if (GameManager.instance.isGameOver)
@@ -167,7 +232,7 @@ public class EnemyAI : MonoBehaviourPun, IPunObservable
         animator.SetTrigger(hashPlayerDie);
     }
 
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+/*     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
         {
@@ -179,5 +244,5 @@ public class EnemyAI : MonoBehaviourPun, IPunObservable
             curState = (State)stream.ReceiveNext();
             curisDie = (bool)stream.ReceiveNext();
         }
-    }
+    } */
 }

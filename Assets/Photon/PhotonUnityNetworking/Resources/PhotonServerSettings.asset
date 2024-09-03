@@ -50,6 +50,11 @@ MonoBehaviour:
   - PlayerLazerBeam
   - MoveAni
   - MoveRun
+  - CheckStateRPC
+  - ShowLazerBeam
+  - CreateE_BulletPool
+  - SyncEnemyState
+  - SyncEnemyStateRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

@@ -11,8 +11,7 @@ public class SceneLoader : MonoBehaviour
 
     void InitialSceneInfo()     // 씬 정보 이니셜
     {
-        loadScenes.Add("Level_1", LoadSceneMode.Additive);
-        loadScenes.Add("BattleField_Scene", LoadSceneMode.Additive);
+        loadScenes.Add("BattelField_Scene_Backup", LoadSceneMode.Additive);
     }
 
     IEnumerator Start()
@@ -36,8 +35,6 @@ public class SceneLoader : MonoBehaviour
 
     IEnumerator Fade(float finalAlpha)
     {
-        //                                                                          // "Level_1"에는 Lighting Data가 있음
-        SceneManager.SetActiveScene(SceneManager.GetSceneByName("Level_1"));        // "Level_1" 씬을 활성화
         fadeCG.blocksRaycasts = true;                                               // 마우스 클릭을 막음
         float fadeSpeed = Mathf.Abs(fadeCG.alpha - finalAlpha) / fadeDuration;      // fadeSpeed = (현재 알파값 - 목표 알파값) / fadeDuration
         while (!Mathf.Approximately(fadeCG.alpha, finalAlpha))                          // 현재 알파값이 목표 알파값과 같지 않다면 (아직 불투명하다면)

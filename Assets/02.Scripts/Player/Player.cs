@@ -52,9 +52,9 @@ public partial class Player : MonoBehaviourPun, IPunObservable
     private bool isFireAuto = false;
     private float nextFire;         // 다음 발사 시간을 저장
     private float fireRate = 0.1f;  // 총알 발사 간격
-    private bool isReload = false;  // 재장전 여부
-    private int maxBullet = 10;
-    private int currentBullet;
+    public bool isReload = false;  // 재장전 여부
+    public int maxBullet = 10;
+    public int currentBullet;
     private Sprite[] weaponIcons;   // 무기 변경 아이콘
     private Image weaponImage;      // 이미지 컴포넌트
 
@@ -131,12 +131,11 @@ public partial class Player : MonoBehaviourPun, IPunObservable
         if (photonView.IsMine)
         {
             PlayerMove_All();
-            photonView.RPC(nameof(PlayerGunFire), RpcTarget.MasterClient);
+            PlayerGunFire();
         }
         else
         {
             SmoothMove();
-            muzzFlash.Stop();
         }
         //PLayerGunFireAuto();
     }
@@ -223,8 +222,6 @@ public partial class Player : MonoBehaviourPun, IPunObservable
             stream.SendNext(tr.rotation);
             stream.SendNext(h);
             stream.SendNext(v);
-            stream.SendNext(isFire);
-            stream.SendNext(isReload);
         }
         else
         {
@@ -232,13 +229,9 @@ public partial class Player : MonoBehaviourPun, IPunObservable
             currRot = (Quaternion)stream.ReceiveNext();
             curh = (float)stream.ReceiveNext();
             curv = (float)stream.ReceiveNext();
-            isFire = (bool)stream.ReceiveNext();
-            isReload = (bool)stream.ReceiveNext();
         }
     }
 
-
-    [PunRPC]
     private void PlayerGunFire()
     {
         if (Input.GetMouseButtonUp(0) || !isFire || isRun)
@@ -269,7 +262,7 @@ public partial class Player : MonoBehaviourPun, IPunObservable
         currentBullet--;
         isFire = true;
         muzzFlash.Play();
-        lazerBeam.photonView.RPC("PlayerLazerBeam", RpcTarget.All);
+        LazerBeam.instance.PlayerLazerBeam();
         RaycastHit hit; // 광선이 오브젝트에 충돌할 경우 충돌 지점이나 거리 등을 알려주는 광선 구조체
         if (Physics.Raycast(firePos.position, firePos.forward, out hit, 20f))    // 광선을 쐈을 때 반경 안에서 맞았는지 여부
         {
@@ -310,6 +303,7 @@ public partial class Player : MonoBehaviourPun, IPunObservable
         SoundManager.Instance.PlaySound(tr.position, playerSound.reload[(int)weaponType]);
         yield return new WaitForSeconds(playerSound.reload[(int)weaponType].length + 0.3f);
         currentBullet = maxBullet;
+        isReload = false;
     }
 
     /*     IEnumerator FireAuto()
