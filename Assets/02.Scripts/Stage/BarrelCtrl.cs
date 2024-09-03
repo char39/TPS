@@ -31,21 +31,6 @@ public class BarrelCtrl : MonoBehaviour
         meshRenderer.material.mainTexture = textures[Random.Range(0, textures.Length - 1)];
     }
 
-    /*  Projectile movement 총알 충돌시
-    private void OnCollisionEnter(Collision col)
-    {
-        if (col.gameObject.CompareTag(bulletTag) || col.gameObject.CompareTag(bulletTag_E))
-        {
-            hitCount++;
-            if (hitCount == 5)
-            {
-                ExplosionBarrel();
-                StartCoroutine(GameManager.instance.CameraShake());
-            }
-        }
-    }
-    */
-    
     void OnDamage(object[] paramsObj)
     {
         Vector3 firePos = (Vector3)paramsObj[1];    // 발사 위치
@@ -75,7 +60,7 @@ public class BarrelCtrl : MonoBehaviour
             Rigidbody rb_col = col.GetComponent<Rigidbody>();
             if (rb_col != null)
             {
-                SoundManager.S_Instance.PlaySound(transform.position, clip_explo);
+                SoundManager.Instance.PlaySound(transform.position, clip_explo);
                 rb_col.mass = 20.0f; // 배럴 무게를 기존 60.0f에서 20.0f로 바꿈
                 rb_col.AddExplosionForce(1000, transform.position, 10f, 1200f);
                 // 폭발력, 폭발 위치, 폭발 반경, 위로 솟구치는 힘

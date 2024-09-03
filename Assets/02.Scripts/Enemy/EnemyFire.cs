@@ -72,7 +72,7 @@ public class EnemyFire : MonoBehaviour
                 bullets.transform.rotation = firePos.rotation;
                 bullets.SetActive(true);
                 animator.SetTrigger(hashFire);
-                SoundManager.S_Instance.PlaySound(firePos.position, enemyFireClip);
+                SoundManager.Instance.PlaySound(firePos.position, enemyFireClip);
                 StartCoroutine(ShowMuzzleFlash());
                 yield return new WaitForSeconds(0.1f);
             }
@@ -81,7 +81,7 @@ public class EnemyFire : MonoBehaviour
     IEnumerator Reload()
     {
         animator.SetTrigger(hashReload);
-        SoundManager.S_Instance.PlaySound(transform.position, reloadClip);
+        SoundManager.Instance.PlaySound(transform.position, reloadClip);
         yield return reloadws;
         curBullet = maxBullet;
     }

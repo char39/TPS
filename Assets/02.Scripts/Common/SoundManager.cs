@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class SoundManager : MonoBehaviour
 {
-    public static SoundManager S_Instance;
+    public static SoundManager Instance;
     public float SoundVolume = 1.0f;    // 사운드 볼륨
     public bool isSoundMute = false;    // 음소거 여부
     GameObject soundObjGroup;
     GameObject sound_obj;
     void Awake()
     {
-        if (S_Instance == null) S_Instance = this;
-        else if (S_Instance != this) Destroy(gameObject);
+        if (Instance == null) Instance = this;
+        else if (Instance != this) Destroy(gameObject);
         DontDestroyOnLoad(gameObject);
         soundObjGroup = new GameObject("SoundObjGroup");
         sound_obj = Resources.Load<GameObject>("Prefab/sound_obj");

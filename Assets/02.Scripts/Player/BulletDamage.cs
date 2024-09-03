@@ -18,13 +18,13 @@ public class BulletDamage : MonoBehaviour
     {
         if (col.gameObject.CompareTag("Wall"))
         {
-            SoundManager.S_Instance.PlaySound(transform.position, clip_wall);
+            SoundManager.Instance.PlaySound(transform.position, clip_wall);
             GameObject flare = Instantiate(flarePrefab, transform.position, Quaternion.identity);
             Destroy(flare, 1.0f);
         }
         if (col.gameObject.CompareTag("Barrel"))
         {
-            SoundManager.S_Instance.PlaySound(transform.position, clip_wall);
+            SoundManager.Instance.PlaySound(transform.position, clip_wall);
         }
         if (col.gameObject.CompareTag("Enemy") || col.gameObject.CompareTag("EnemySwat"))
         {
