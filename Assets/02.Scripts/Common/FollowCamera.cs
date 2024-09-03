@@ -74,12 +74,4 @@ public class FollowCamera : MonoBehaviour
         camTr.rotation = Quaternion.Slerp(camTr.rotation, target.rotation, Time.deltaTime * rotDamping);    // 본인 회전값에서 타겟의 회전
         camTr.LookAt(target.position + (target.up * targetOffset));                             // 타겟 위치에서 targetOffset만큼 위로 올림.
     }
-    /*
-    private void OnDrawGizmos()         // Scene에서 Debug상의 여러 색상이나 선 등을 그려주는 메서드. 콜백 함수
-    {
-        Gizmos.color = Color.green;
-        Gizmos.DrawSphere(target.position + (target.up * targetOffset), 0.1f);          // (그리는 위치, 반지름)
-        Gizmos.DrawLine(target.position + (target.up * targetOffset), camTr.position);  // (여기부터, 여기까지) 선을 그림
-    }
-    */
 }

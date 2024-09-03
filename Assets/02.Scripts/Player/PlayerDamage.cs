@@ -56,16 +56,6 @@ public class PlayerDamage : MonoBehaviour
 
     public void PlayerDie(Collision col)
     {
-        /* 
-        isDie = true;
-        GameManager.instance.isGameOver = true;
-        GameObject[] enemy = GameObject.FindGameObjectsWithTag("Enemy");
-        for (int i = 0; i < enemy.Length; i++)
-            enemy[i].gameObject.SendMessage("OnPlayerDie", SendMessageOptions.DontRequireReceiver);
-        GameObject[] enemySwat = GameObject.FindGameObjectsWithTag("EnemySwat");
-        for (int i = 0; i < enemySwat.Length; i++)
-            enemySwat[i].gameObject.SendMessage("OnPlayerDie", SendMessageOptions.DontRequireReceiver);
-        */
         OnPlayerDie();
     }
 

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BulletMove : MonoBehaviour
@@ -19,12 +17,13 @@ public class BulletMove : MonoBehaviour
     }
     void BulletDisable()
     {
-        this.gameObject.SetActive(false);
+        gameObject.SetActive(false);
     }
     private void OnEnable() // 옵젝 켜질 때마다 실행
     {
-        damage = GameManager.instance.gameData.damage;
-        Invoke("BulletDisable", 3.0f);
+        if (GameManager.instance != null && GameManager.instance.gameData != null)
+            damage = GameManager.instance.gameData.damage;
+        Invoke(nameof(BulletDisable), 3.0f);
         rb.AddForce(transform.forward * speed);
         GameManager.OnItemChange += UpdateSetup;    // 이벤트 등록
     }
@@ -35,8 +34,7 @@ public class BulletMove : MonoBehaviour
     private void OnDisable()
     {
         trail.Clear();
-        transform.position = Vector3.zero;
-        transform.rotation = Quaternion.identity;
+        transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
         rb.Sleep();
     }
 }

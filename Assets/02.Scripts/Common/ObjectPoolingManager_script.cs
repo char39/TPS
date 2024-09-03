@@ -9,10 +9,10 @@ public class ObjectPoolingManager_script : MonoBehaviour
     private GameObject e_bulletPrefab;
     private GameObject enemyPrefab;
     private GameObject enemySwatPrefab;
-    private int maxPool = 1;    //오브젝트 풀에 생성 할 개수
+    private int maxPool = 1;    //오브젝트 풀에 한번에 생성 할 개수
     private int maxPool_e = 25;
     private int maxPool_Enemy = 10;
-    private int maxPool_EnemySwat = 10;
+    private int maxPool_EnemySwat = 0;
     public List<GameObject> bulletPoolList;
     public List<GameObject> e_bulletPoolList;
     public List<GameObject> enemyPoolList;
@@ -32,13 +32,13 @@ public class ObjectPoolingManager_script : MonoBehaviour
         enemySwatPrefab = Resources.Load<GameObject>("Prefab/EnemySwat");
         CreateBulletPool(); //오브젝트 풀링 생성 함수
         CreateE_BulletPool();
-        CreateEnemyPool();
-        CreateEnemySwatPool();
     }
     
     void Start()
     {
         FindSpawnPoint();
+        CreateEnemyPool();
+        CreateEnemySwatPool();
     }
 
     void FindSpawnPoint()

@@ -48,9 +48,4 @@ public class SceneLoader : MonoBehaviour
         fadeCG.blocksRaycasts = false;                                              // 마우스 클릭을 허용
         SceneManager.UnloadSceneAsync("SceneLoader");                               // "SceneLoader" 씬을 언로드 (Async : 비동기, 독립적으로)
     }
-
-    void Update()
-    {
-        
-    }
 }

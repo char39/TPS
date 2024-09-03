@@ -15,7 +15,6 @@ public class GameManager : MonoBehaviour
     //public int killCounts;
     [Header("DataManager")]
     [SerializeField] private DataManager dataManager;
-    //public GameData gameData;     // GameData.cs 대신 GameDataObject.cs를 쓰려고 주석
     public GameDataObject gameData;
 
     // 인벤토리 아이템이 변경 되었을 때 발생시킬 이벤트 정의
@@ -44,11 +43,6 @@ public class GameManager : MonoBehaviour
         LoadGameData();
     }
 
-    private void OnDisable()
-    {
-
-    }
-
     private void OnApplicationQuit()        // OnDisable() 이벤트 함수보다 우선순위가 낮고, 자동 호출된다.
     {
         SaveGameData();
@@ -56,14 +50,6 @@ public class GameManager : MonoBehaviour
 
     void LoadGameData()
     {
-        // GameData data = dataManager.Load();
-        // gameData.hp = data.hp;
-        // gameData.damage = data.damage;
-        // gameData.speed = data.speed;
-        // gameData.killCounts = data.killCounts;
-        // gameData.equipItem = data.equipItem;
-            // GameDataObject.cs를 쓰면서 주석처리함. ScriptableObject는 전역 접근이 가능하기에 별도로 로드하는 과정이 필요치 않다.
-
         if (gameData.equipItem.Count > 0)
             InventorySetUp();
         killText.text = $"Kill : <color=#FFAAAA>{gameData.killCounts.ToString().PadLeft(2)}</color>";
@@ -86,7 +72,6 @@ public class GameManager : MonoBehaviour
     }
     void SaveGameData()
     {
-        //dataManager.Save(gameData);
         #if UNITY_EDITOR
         UnityEditor.EditorUtility.SetDirty(gameData);   // ScriptableObject를 상속받은 클래스는 이 함수를 통해 저장해야 한다. .asset 파일에 저장
         #endif
