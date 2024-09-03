@@ -69,6 +69,8 @@ public class FollowCamera : MonoBehaviour
     }
     private void CameraFollow()         // 카메라가 타겟을 대상으로 부드럽게 움직이는 메서드
     {
+        if (camTr == null || target == null)
+            return;
         var camPos = target.position - (target.forward * distance) + (target.up * height);      // 타겟 포지션에서 distance만큼 뒤에 위치 + height 높이 만큼 위에 위치
         camTr.position = Vector3.Slerp(camTr.position, camPos, Time.deltaTime * moveDamping);               // 곡면 보간. 본인 위치에서, camPos까지, moveDamping * 시간만큼 부드럽게 움직임
         camTr.rotation = Quaternion.Slerp(camTr.rotation, target.rotation, Time.deltaTime * rotDamping);    // 본인 회전값에서 타겟의 회전

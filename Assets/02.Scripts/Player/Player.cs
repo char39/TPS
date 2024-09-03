@@ -1,7 +1,9 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using Photon.Pun;
 
 [System.Serializable]
 public struct PlayerSound
@@ -21,7 +23,7 @@ public class PlayerAnimation
     public AnimationClip sprint;
 }
 
-public partial class Player : MonoBehaviour
+public partial class Player : MonoBehaviourPun, IPunObservable
 {
     public enum WeaponType { RIFLE = 0, SHOTGUN = 1 }
     public PlayerAnimation playerAnimation;
@@ -42,6 +44,10 @@ public partial class Player : MonoBehaviour
     private float h, v, r;
     private bool runButton;
 
+    private Vector3 currPos;
+    private Quaternion currRot;
+    private float curh, curv;
+
     private bool isFire = false;
     private bool isFireAuto = false;
     private float nextFire;         // 다음 발사 시간을 저장
@@ -60,7 +66,11 @@ public partial class Player : MonoBehaviour
     private Transform firePos;
     public bool isRun;
 
-    private ParticleSystem muzzFlash;
+    private ParticleSystem muzzFlash;       // 총구 화염 효과
+    public AudioClip fireSound;
+    public LineRenderer laserLine;
+    private LazerBeam lazerBeam;
+
     private readonly string enemyTag = "Enemy";
     private readonly string enemyTag2 = "EnemySwat";
     private readonly string barrelTag = "Barrel";
@@ -104,15 +114,30 @@ public partial class Player : MonoBehaviour
         barrelLayer = LayerMask.NameToLayer("Barrel");
         boxLayer = LayerMask.NameToLayer("Boxes");
         layerMask = 1 << enemyLayer | 1 << barrelLayer | 1 << boxLayer;         // 레이어 마스크를 이용해 레이어를 묶어서 사용
+
+        if (muzzFlash != null)
+        {
+            muzzFlash.Stop();
+        }
+
+        // LazerBeam 객체 참조
+        lazerBeam = FindObjectOfType<LazerBeam>();
     }
 
     void Update()
     {
         //isFireAuto = Check_isFireAuto();
-        if (EventSystem.current.IsPointerOverGameObject()) return;  // UI 클릭 시 플레이어 움직임 X. 이벤트시스템.현재.마우스가옵젝위에존재시, 메서드종료.
-        PlayerMove_All();
-
-        PlayerGunFire();
+        //if (EventSystem.current.IsPointerOverGameObject()) return;  // UI 클릭 시 플레이어 움직임 X. 이벤트시스템.현재.마우스가옵젝위에존재시, 메서드종료.
+        if (photonView.IsMine)
+        {
+            PlayerMove_All();
+            photonView.RPC(nameof(PlayerGunFire), RpcTarget.MasterClient);
+        }
+        else
+        {
+            SmoothMove();
+            muzzFlash.Stop();
+        }
         //PLayerGunFireAuto();
     }
 
@@ -131,46 +156,221 @@ public partial class Player : MonoBehaviour
     {
         runButton = context.ReadValueAsButton();
     }
-    
+
     private void PlayerMove_All()   // 플레이어의 움직이는 모든 것
     {
         MoveAni();
         MoveRun();
         tr.Translate(moveDir * finalMoveSpeed * Time.deltaTime, Space.Self);     // Space.Self 로컬좌표, Space.World 절대좌표
         tr.Rotate(Vector3.up * r * rotSpeed * Time.deltaTime, Space.Self);
-        
+
     }
+    [PunRPC]
     private void MoveRun()
     {
-        if (runButton && (Mathf.Abs(h) > 0.1 || Mathf.Abs(v) > 0.1))
+        if (photonView.IsMine)
         {
-            finalMoveSpeed = moveSpeed * 1.5f;
-            isRun = true;
+            if (runButton && (Mathf.Abs(h) > 0.1 || Mathf.Abs(v) > 0.1))
+            {
+                finalMoveSpeed = moveSpeed * 1.5f;
+                isRun = true;
+            }
+            else
+            {
+                finalMoveSpeed = moveSpeed;
+                isRun = false;
+            }
+        }
+    }
+    [PunRPC]
+    private void MoveAni()  // 애니메이션만 재생
+    {
+        if (photonView.IsMine)
+        {
+            string animationName = playerAnimation.idle.name;
+            float animationSpeed = 1.0f;
+
+            if (h > 0.1f)
+                animationName = playerAnimation.runRight.name;
+            else if (h < -0.1f)
+                animationName = playerAnimation.runLeft.name;
+            else if (v > 0.1f)
+                animationName = playerAnimation.runForward.name;
+            else if (v < -0.1f)
+                animationName = playerAnimation.runBackward.name;
+
+            if (finalMoveSpeed == moveSpeed * 1.5f)
+                animationSpeed = 1.5f;
+
+            ani.CrossFade(animationName, 0.3f); // 0.3초 동안 천천히 전환
+            ani[animationName].speed = animationSpeed;
+        }
+    }
+
+    private void SmoothMove()
+    {
+        tr.position = Vector3.Lerp(tr.position, currPos, Time.deltaTime * 10.0f);
+        tr.rotation = Quaternion.Slerp(tr.rotation, currRot, Time.deltaTime * 10.0f);
+        curh = Mathf.Lerp(curh, h, Time.deltaTime * 20.0f);
+        curv = Mathf.Lerp(curv, v, Time.deltaTime * 20.0f);
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(tr.position);
+            stream.SendNext(tr.rotation);
+            stream.SendNext(h);
+            stream.SendNext(v);
+            stream.SendNext(isFire);
+            stream.SendNext(isReload);
         }
         else
         {
-            finalMoveSpeed = moveSpeed;
-            isRun = false;
+            currPos = (Vector3)stream.ReceiveNext();
+            currRot = (Quaternion)stream.ReceiveNext();
+            curh = (float)stream.ReceiveNext();
+            curv = (float)stream.ReceiveNext();
+            isFire = (bool)stream.ReceiveNext();
+            isReload = (bool)stream.ReceiveNext();
         }
     }
-    private void MoveAni()  // 애니메이션만 재생
+
+
+    [PunRPC]
+    private void PlayerGunFire()
     {
-        string animationName = playerAnimation.idle.name;
-        float animationSpeed = 1.0f;
+        if (Input.GetMouseButtonUp(0) || !isFire || isRun)
+            muzzFlash.Stop();
+        if (Input.GetMouseButton(0) && !isFire && !isRun)
+        {
+            if (currentBullet <= 0 && !isReload)
+                StartCoroutine(Reload());
+            else if (currentBullet > 0 && !isReload)
+                StartCoroutine(Fire());
+        }
+    }
+    /*     private void PLayerGunFireAuto()
+        {
+            if (!isFire || isRun)
+                muzzFlash.Stop();
+            if (isFireAuto && !isFire && !isRun)
+            {
+                if (currentBullet <= 0 && !isReload)
+                    StartCoroutine(ReloadAuto());
+                else if (currentBullet > 0 && !isReload)
+                    StartCoroutine(FireAuto());
+            }
+        } */
 
-        if (h > 0.1f)
-            animationName = playerAnimation.runRight.name;
-        else if (h < -0.1f)
-            animationName = playerAnimation.runLeft.name;
-        else if (v > 0.1f)
-            animationName = playerAnimation.runForward.name;
-        else if (v < -0.1f)
-            animationName = playerAnimation.runBackward.name;
+    IEnumerator Fire()
+    {
+        currentBullet--;
+        isFire = true;
+        muzzFlash.Play();
+        lazerBeam.photonView.RPC("PlayerLazerBeam", RpcTarget.All);
+        RaycastHit hit; // 광선이 오브젝트에 충돌할 경우 충돌 지점이나 거리 등을 알려주는 광선 구조체
+        if (Physics.Raycast(firePos.position, firePos.forward, out hit, 20f))    // 광선을 쐈을 때 반경 안에서 맞았는지 여부
+        {
+            if (hit.collider.gameObject.tag == enemyTag || hit.collider.gameObject.tag == enemyTag2)
+            {
+                //Debug.Log("적 hit");
+                object[] paramsObj = new object[2];
+                paramsObj[0] = hit.point;       // 첫 번째 배열에 맞은 위치값을 전달
+                paramsObj[1] = 25f;             // 두 번째 배열에 총알 데미지값을 전달
+                hit.collider.gameObject.SendMessage("OnDamage", paramsObj, SendMessageOptions.DontRequireReceiver); // public이 아니어도 호출 가능
+            }
+            if (hit.collider.gameObject.tag == barrelTag)
+            {
+                //Debug.Log("배럴 hit");
+                object[] paramsObj = new object[3];
+                paramsObj[0] = 1;
+                paramsObj[1] = firePos.position;
+                paramsObj[2] = hit.point;
+                hit.collider.gameObject.SendMessage("OnDamage", paramsObj, SendMessageOptions.DontRequireReceiver);
+            }
+            if (hit.collider.gameObject)
+            {
+                //Debug.Log("벽, 바닥 hit");
+                object[] paramsObjs = new object[1];
+                paramsObjs[0] = hit.point;
+                hit.collider.gameObject.SendMessage("BulletHitEffect", paramsObjs, SendMessageOptions.DontRequireReceiver);
+            }
+        }
+        SoundManager.Instance.PlaySound(firePos.position, playerSound.fire[(int)weaponType]);
+        yield return new WaitForSeconds(0.1f);
+        UpdateBulletText();
+        isFire = false;
+    }
 
-        if (finalMoveSpeed == moveSpeed * 1.5f)
-            animationSpeed = 1.5f;
+    IEnumerator Reload()
+    {
+        isReload = true;
+        SoundManager.Instance.PlaySound(tr.position, playerSound.reload[(int)weaponType]);
+        yield return new WaitForSeconds(playerSound.reload[(int)weaponType].length + 0.3f);
+        currentBullet = maxBullet;
+    }
 
-        ani.CrossFade(animationName, 0.3f); // 0.3초 동안 천천히 전환
-        ani[animationName].speed = animationSpeed;
+    /*     IEnumerator FireAuto()
+        {
+            currentBullet--;
+            isFire = true;
+            muzzFlash.Play();
+            LazerBeam.instance.PlayerLazerBeam();
+            RaycastHit hit; // 광선이 오브젝트에 충돌할 경우 충돌 지점이나 거리 등을 알려주는 광선 구조체
+            if (Physics.Raycast(firePos.position, firePos.forward, out hit, 20f))    // 광선을 쐈을 때 반경 안에서 맞았는지 여부
+            {
+                if (hit.collider.gameObject.tag == enemyTag || hit.collider.gameObject.tag == enemyTag2)
+                {
+                    //Debug.Log("적 hit");
+                    object[] paramsObj = new object[2];
+                    paramsObj[0] = hit.point;       // 첫 번째 배열에 맞은 위치값을 전달
+                    paramsObj[1] = 25f;             // 두 번째 배열에 총알 데미지값을 전달
+                    hit.collider.gameObject.SendMessage("OnDamage", paramsObj, SendMessageOptions.DontRequireReceiver); // public이 아니어도 호출 가능
+                }
+                if (hit.collider.gameObject.tag == barrelTag)
+                {
+                    //Debug.Log("배럴 hit");
+                    object[] paramsObj = new object[3];
+                    paramsObj[0] = 1;
+                    paramsObj[1] = firePos.position;
+                    paramsObj[2] = hit.point;
+                    hit.collider.gameObject.SendMessage("OnDamage", paramsObj, SendMessageOptions.DontRequireReceiver);
+                }
+                if (hit.collider.gameObject)
+                {
+                    //Debug.Log("벽, 바닥 hit");
+                    object[] paramsObjs = new object[1];
+                    paramsObjs[0] = hit.point;
+                    hit.collider.gameObject.SendMessage("BulletHitEffect", paramsObjs, SendMessageOptions.DontRequireReceiver);
+                }
+            }
+            SoundManager.Instance.PlaySound(firePos.position, playerSound.fire[(int)weaponType]);
+            yield return new WaitForSeconds(fireRate);
+            UpdateBulletText();
+            isFire = false;
+        } */
+    /*     IEnumerator ReloadAuto()
+        {
+            isReload = true;
+            SoundManager.Instance.PlaySound(tr.position, playerSound.reload[(int)weaponType]);
+            yield return new WaitForSeconds(playerSound.reload[(int)weaponType].length + 0.3f);
+            currentBullet = maxBullet;
+            magazineImage.fillAmount = 1.0f;
+            UpdateBulletText();
+            isReload = false;
+        } */
+
+    private void UpdateBulletText() // 총알 발사할 때마다 UI 왼쪽상단 탄창 총알 개수 갱신
+    {
+        magazineImage.fillAmount = (float)currentBullet / (float)maxBullet;
+        magazineText.text = string.Format($"<color=#FFAAAA>{currentBullet}</color> / {maxBullet}");
+    }
+    public void OnChangeWeapon()
+    {
+        //if (GameManager.instance.isPaused)  return;
+        weaponType = (WeaponType)((int)++weaponType % 2);   // enum 순서 변경
+        weaponImage.sprite = weaponIcons[(int)weaponType];  // weaponImage에 enum index 값과 동일한 weaponIcons sprite를 할당
     }
 }

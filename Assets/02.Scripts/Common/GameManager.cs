@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using DataInfo;
+using Photon.Pun;
+using Photon.Realtime;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
-public class GameManager : MonoBehaviour
+public class GameManager : MonoBehaviourPunCallbacks
 {
     public static GameManager instance;
     private Camera mainCamera;
@@ -12,7 +15,7 @@ public class GameManager : MonoBehaviour
     public bool isGameOver;
     CanvasGroup inventoryOpen;
     public Text killText;
-    //public int killCounts;
+    public int killCounts = 0;
     [Header("DataManager")]
     [SerializeField] private DataManager dataManager;
     public GameDataObject gameData;
@@ -23,6 +26,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject slotList;
     public GameObject[] itemObjects;
 
+    public Text textConnect;
+    public Text textLogMessage;
+    private List<string> logMessages = new();
+
     void Awake()
     {
         isGameOver = false;
@@ -30,7 +37,6 @@ public class GameManager : MonoBehaviour
             instance = this;
         else if (instance != this)
             Destroy(gameObject);
-        DontDestroyOnLoad(gameObject);
 
         dataManager = GetComponent<DataManager>();
         dataManager.Initialized();
@@ -40,8 +46,72 @@ public class GameManager : MonoBehaviour
         inventoryOpen = GameObject.Find("Inventory").GetComponent<CanvasGroup>();
         InventoryOnOff(false);
         killText = GameObject.Find("Text_KillCount").GetComponent<Text>();
+
+        CreatePlayer();
+        PhotonNetwork.IsMessageQueueRunning = true;
+        string msg = "\n<color=#64FF00>Log:[" + PhotonNetwork.NickName + "]Connected.</color>";
+        AddLogMessage(msg);
+        photonView.RPC(nameof(LogMessage), RpcTarget.AllBuffered, msg);
+
+
         LoadGameData();
     }
+
+    void Update()
+    {
+        GetConnectPlayerCount();
+    }
+
+    private void CreatePlayer()
+    {
+        PhotonNetwork.Instantiate("Player", Vector3.zero, Quaternion.identity);
+    }
+
+    [PunRPC]
+    private void GetConnectPlayerCount()
+    {
+        Room currentRoom = PhotonNetwork.CurrentRoom;
+        if (currentRoom != null)
+            textConnect.text = currentRoom.PlayerCount.ToString() + " / " + currentRoom.MaxPlayers.ToString();
+    }
+    public override void OnPlayerEnteredRoom(Photon.Realtime.Player newPlayer)
+    {
+        GetConnectPlayerCount();
+        //foreach (string msg in logMessages)
+        //    photonView.RPC(nameof(LogMessage), newPlayer, msg);
+    }
+    public override void OnPlayerLeftRoom(Photon.Realtime.Player otherPlayer) => GetConnectPlayerCount();
+    public override void OnLeftRoom() => SceneManager.LoadScene("StartScene");
+    public void OnClickExitRoom()
+    {
+        string msg = "\n<color=#FF0000>Log:[" + PhotonNetwork.NickName + "]Disconnected.</color>";
+        AddLogMessage(msg);
+        photonView.RPC(nameof(LogMessage), RpcTarget.AllBuffered, msg);
+        PhotonNetwork.LeaveRoom();
+    }
+    [PunRPC]
+    private void LogMessage(string msg)
+    {
+        textLogMessage.text += msg;
+        AddLogMessage(msg);
+    }
+
+    private void AddLogMessage(string msg) => logMessages.Add(msg);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     private void OnApplicationQuit()        // OnDisable() 이벤트 함수보다 우선순위가 낮고, 자동 호출된다.
     {
@@ -52,7 +122,7 @@ public class GameManager : MonoBehaviour
     {
         if (gameData.equipItem.Count > 0)
             InventorySetUp();
-        killText.text = $"Kill : <color=#FFAAAA>{gameData.killCounts.ToString().PadLeft(2)}</color>";
+        killText.text = $"Kill : <color=#FFAAAA>{killCounts.ToString().PadLeft(2)}</color>";
     }
     void InventorySetUp()       // 인벤토리 UI에 저장된 장착아이템을 갱신
     {
@@ -147,8 +217,8 @@ public class GameManager : MonoBehaviour
 
     public void KillScore()
     {
-        ++gameData.killCounts;
-        killText.text = $"Kill : <color=#FFAAAA>{gameData.killCounts.ToString().PadLeft(2)}</color>";
+        ++killCounts;
+        killText.text = $"Kill : <color=#FFAAAA>{killCounts.ToString().PadLeft(2)}</color>";
     }
 
     public IEnumerator CameraShake()

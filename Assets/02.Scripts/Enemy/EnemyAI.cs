@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
 
-public class EnemyAI : MonoBehaviour
+public class EnemyAI : MonoBehaviourPun, IPunObservable
 {
     public enum State   // 열거형 상수
     { PTROL = 0, TRACE = 1, ATTACK = 2, DIE = 3 , GAMEOVER = 4 , EXPLOSIONDIE = 5 }
@@ -22,6 +23,9 @@ public class EnemyAI : MonoBehaviour
     private WaitForSeconds waitTime;        // 기다리는 값 선언
     private EnemyMoveAgent enemyMoveAgent;
     private EnemyFire enemyFire;
+
+    private State curState;
+    public bool curisDie;
 
     private readonly int hashMove = Animator.StringToHash("IsMove");    // 애니메이터 컨트롤러의 정의된 파라미터의 해시값을 정수로 추출
     private readonly int hashSpeed = Animator.StringToHash("moveSpeed");// 성능 향상을 위함. 미리 문자열 값을 정수 값으로 바꾸어 컴파일러가 읽기 빠르게
@@ -52,7 +56,13 @@ public class EnemyAI : MonoBehaviour
             state = State.PTROL;
             animator.SetFloat(hashOffset, Random.Range(0.1f, 1.0f));
             animator.SetFloat(hashWalkSpeed, Random.Range(1.0f, 2.0f));
-            StartCoroutine(CheckState());
+            if (photonView.IsMine)
+                StartCoroutine(CheckState());
+            else
+            {
+                state = curState;
+                isDie = curisDie;
+            }
             StartCoroutine(Action());
         }
         else
@@ -155,5 +165,19 @@ public class EnemyAI : MonoBehaviour
     {
         StopAllCoroutines();
         animator.SetTrigger(hashPlayerDie);
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext((int)state);
+            stream.SendNext(isDie);
+        }
+        else
+        {
+            curState = (State)stream.ReceiveNext();
+            curisDie = (bool)stream.ReceiveNext();
+        }
     }
 }

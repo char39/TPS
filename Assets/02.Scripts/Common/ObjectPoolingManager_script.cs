@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
-public class ObjectPoolingManager_script : MonoBehaviour
+public class ObjectPoolingManager_script : MonoBehaviourPunCallbacks
 {
     public static ObjectPoolingManager_script poolingManager;
     private GameObject bulletPrefab;
@@ -25,7 +26,7 @@ public class ObjectPoolingManager_script : MonoBehaviour
             poolingManager = this;
         else if (poolingManager != this)
             Destroy(gameObject);
-        DontDestroyOnLoad(gameObject);
+
         bulletPrefab = Resources.Load<GameObject>("Prefab/Bullet");
         e_bulletPrefab = Resources.Load<GameObject>("Prefab/E_Bullet");
         enemyPrefab = Resources.Load<GameObject>("Prefab/Enemy");
@@ -53,6 +54,7 @@ public class ObjectPoolingManager_script : MonoBehaviour
             StartCoroutine(CreateEnemySwat());
         }
     }
+    [PunRPC]
     IEnumerator CreateEnemy()
     {
         while (!GameManager.instance.isGameOver)
@@ -94,6 +96,7 @@ public class ObjectPoolingManager_script : MonoBehaviour
         }
     }
 
+    [PunRPC]
     void CreateBulletPool()
     {
         GameObject playerBulletGroup = new GameObject("PlayerBulletGroup");
@@ -140,6 +143,7 @@ public class ObjectPoolingManager_script : MonoBehaviour
         return null;    // 아니면 null
     }
 
+    [PunRPC]
     void CreateEnemyPool()
     {
         GameObject enemyGroup = new GameObject("EnemyGroup");

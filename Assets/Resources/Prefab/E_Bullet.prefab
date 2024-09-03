@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: -181353744923270744}
   - component: {fileID: -8612339960167285642}
   - component: {fileID: -1236335179919602128}
+  - component: {fileID: -2987007610570957558}
   m_Layer: 13
   m_Name: E_Bullet
   m_TagString: E_Bullet
@@ -221,6 +222,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f3d18639f88fbc4b89119f5d6538e58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  damage: 0
 --- !u!114 &-1236335179919602128
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -236,6 +238,28 @@ MonoBehaviour:
   flarePrefab: {fileID: 100006, guid: 584d0d53e45dc624d86724be4773d63d, type: 3}
   clip_wall: {fileID: 8300000, guid: dac1bc4242795824e8392d40c5811458, type: 3}
   clip_barrel: {fileID: 8300000, guid: 486575db41153ec4c89cfbd176d9e4c0, type: 3}
+--- !u!114 &-2987007610570957558
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7712599512658206379}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 1
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1001 &6603482652489276617
 PrefabInstance:
   m_ObjectHideFlags: 0
