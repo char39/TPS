@@ -26,7 +26,7 @@ public class ObjectPoolingManager_script : MonoBehaviourPunCallbacks
             poolingManager = this;
         else if (poolingManager != this)
             Destroy(gameObject);
-        DontDestroyOnLoad(gameObject);
+
         bulletPrefab = Resources.Load<GameObject>("Prefab/Bullet");
         e_bulletPrefab = Resources.Load<GameObject>("Prefab/E_Bullet");
         enemyPrefab = Resources.Load<GameObject>("Prefab/Enemy");
@@ -121,7 +121,7 @@ public class ObjectPoolingManager_script : MonoBehaviourPunCallbacks
     {
         for (int i = 0; i < maxPool_e; i++)
         {
-            GameObject bullets = PhotonNetwork.Instantiate("E_Bullet", Vector3.zero, Quaternion.identity);
+            GameObject bullets = PhotonNetwork.InstantiateRoomObject("E_Bullet", Vector3.zero, Quaternion.identity);
             bullets.name = $"e_{(i + 1).ToString()} 발";
             bullets.SetActive(false);
             e_bulletPoolList.Add(bullets);
@@ -143,7 +143,7 @@ public class ObjectPoolingManager_script : MonoBehaviourPunCallbacks
     {
         for (int i = 0; i < maxPool_Enemy; i++)
         {
-            GameObject enemys = PhotonNetwork.Instantiate("Enemy", Vector3.zero, Quaternion.identity);
+            GameObject enemys = PhotonNetwork.InstantiateRoomObject("Enemy", Vector3.zero, Quaternion.identity);
             enemys.name = $"enemy {(i + 1).ToString()}";
             enemys.SetActive(false);
             enemyPoolList.Add(enemys);

@@ -55,6 +55,7 @@ public class EnemyAI : MonoBehaviourPun, IPunObservable
     {
         waitTime = new WaitForSeconds(0.3f);
         StartCoroutine(CheckState());
+        //gameObject.SetActive(false);
         
     }
 
@@ -84,17 +85,6 @@ public class EnemyAI : MonoBehaviourPun, IPunObservable
             state = (State)stream.ReceiveNext();
             isDie = (bool)stream.ReceiveNext();
         }
-    }
-
-    public void SyncEnemyState(int index, bool state)
-    {
-        photonView.RPC("SyncEnemyStateRPC", RpcTarget.All, index, state);
-    }
-
-    [PunRPC]
-    void SyncEnemyStateRPC(int index, bool state)
-    {
-        ObjectPoolingManager_script.poolingManager.SyncEnemyState(index, state);
     }
 
 
