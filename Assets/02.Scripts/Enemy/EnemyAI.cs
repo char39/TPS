@@ -11,7 +11,8 @@ public class EnemyAI : MonoBehaviourPun, IPunObservable
     { PTROL = 0, TRACE = 1, ATTACK = 2, DIE = 3 , GAMEOVER = 4 , EXPLOSIONDIE = 5 }
     public State state = State.PTROL;   // 시작하자마자 PTROL로
 
-    private Transform playerTr;    // 거리를 재기 위해 선언
+    public Transform playerTr;    // 거리를 재기 위해 선언
+    private List<Transform> playersTr = new();
     private Transform enemyTr;     // ""
     private Animator animator;
 
@@ -36,9 +37,9 @@ public class EnemyAI : MonoBehaviourPun, IPunObservable
     void Awake()    //EnemyMoveAgent.cs 보다 빨리 호출되게 하기 위함
     {
         enemyMoveAgent = GetComponent<EnemyMoveAgent>();
-        var player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null) // 유효성 검사. 옵젝이 없으면 안함
-            playerTr = player.GetComponent<Transform>();
+        //var player = GameObject.FindGameObjectWithTag("Player");
+        //if (player != null) // 유효성 검사. 옵젝이 없으면 안함
+        //    playerTr = player.GetComponent<Transform>();
         enemyTr = GetComponent<Transform>();
         enemyFire = GetComponent<EnemyFire>();
         animator = GetComponent<Animator>();
@@ -51,11 +52,37 @@ public class EnemyAI : MonoBehaviourPun, IPunObservable
     void Start()
     {
         waitTime = new WaitForSeconds(0.3f);
+        UpdatePlayerList();
         StartCoroutine(CheckState());
-        if (!photonView.IsMine)
-            gameObject.SetActive(false);
     }
 
+    private void UpdatePlayerList()
+    {
+        playersTr.Clear();
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject player in players)
+        {
+            playersTr.Add(player.transform);
+        }
+    }
+
+    private Transform GetClosestPlayer()
+    {
+        UpdatePlayerList();
+        Transform closestPlayer = null;
+        float closestDistance = Mathf.Infinity;
+
+        foreach (Transform player in playersTr)
+        {
+            float distance = Vector3.Distance(enemyTr.position, player.position);
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestPlayer = player;
+            }
+        }
+        return closestPlayer;
+    }
 
 
     void OnEnable()
@@ -66,17 +93,30 @@ public class EnemyAI : MonoBehaviourPun, IPunObservable
             state = State.PTROL;
             animator.SetFloat(hashOffset, Random.Range(0.1f, 1.0f));
             animator.SetFloat(hashWalkSpeed, Random.Range(1.0f, 2.0f));
-            if (PhotonNetwork.IsMasterClient)
+            if (photonView.IsMine)
+            {
+                StartCoroutine(UpdateTarget());
                 StartCoroutine(CheckState());
+                photonView.RPC("Actions", RpcTarget.All);
+            }
             else
             {
                 state = curState;
                 isDie = curisDie;
             }
-            StartCoroutine(Action());
+            //photonView.RPC("Actions", RpcTarget.All);
         }
         else
             return;
+    }
+
+    private IEnumerator UpdateTarget()
+    {
+        while (!GameManager.instance.isGameOver)
+        {
+            playerTr = GetClosestPlayer();
+            yield return waitTime;
+        }
     }
 
     void OnDisable()
@@ -101,19 +141,31 @@ public class EnemyAI : MonoBehaviourPun, IPunObservable
         }
     }
 
+    [PunRPC]
     void CheckStateRPC()
     {
-        if (state == State.DIE || state == State.EXPLOSIONDIE)
-            return;    // 열거형 상수 State 값이 DIE면 이 함수 종료.
-        float dist = (playerTr.position - enemyTr.position).magnitude;
-        if (dist <= attackDist)
-        {
-            state = State.ATTACK;
-        }
-        else if (dist <= traceDist)
-            state = State.TRACE;
+        if (playerTr == null)
+            playerTr = GetClosestPlayer();
         else
-            state = State.PTROL;
+        {
+            if (state == State.DIE || state == State.EXPLOSIONDIE)
+                return;    // 열거형 상수 State 값이 DIE면 이 함수 종료.
+            float dist = (playerTr.position - enemyTr.position).magnitude;
+            if (dist <= attackDist)
+            {
+                state = State.ATTACK;
+            }
+            else if (dist <= traceDist)
+                state = State.TRACE;
+            else
+                state = State.PTROL;
+        }
+    }
+
+    [PunRPC]
+    private void Actions()
+    {
+        StartCoroutine(Action());
     }
 
     IEnumerator Action()        // waitTime 만큼 대기한 후, switch 실행
@@ -150,7 +202,8 @@ public class EnemyAI : MonoBehaviourPun, IPunObservable
                     gameObject.tag = "Untagged";
                     StartCoroutine(ObjectPoolPush());
                     isDie = true;
-                    GameManager.instance.KillScore();
+                    if (photonView.IsMine)
+                        GameManager.instance.KillScore();
                     break;
                 case State.EXPLOSIONDIE:
                     enemyFire.isFire = false;
@@ -161,23 +214,24 @@ public class EnemyAI : MonoBehaviourPun, IPunObservable
                     gameObject.tag = "Untagged";
                     StartCoroutine(ObjectPoolPush());
                     isDie = true;
-                    GameManager.instance.KillScore();
+                    if (photonView.IsMine)
+                        GameManager.instance.KillScore();
                     break;
             }
         }
     }
+
     IEnumerator ObjectPoolPush()
     {
         yield return new WaitForSeconds(3.0f);
-        isDie = false;
-        GetComponent<CapsuleCollider>().enabled = true;
-        gameObject.tag = "Enemy";
-        gameObject.SetActive(false);
+        if (PhotonNetwork.IsMasterClient)
+            PhotonNetwork.Destroy(gameObject);
     }
+
     void OnPlayerDie()
     {
-        StopAllCoroutines();
-        animator.SetTrigger(hashPlayerDie);
+        //StopAllCoroutines();
+        //animator.SetTrigger(hashPlayerDie);
     }
 
 

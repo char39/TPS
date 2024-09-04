@@ -8,6 +8,7 @@ public class EnemyFire : MonoBehaviourPun
     [SerializeField] private AudioClip enemyFireClip;
     [SerializeField] private Animator animator;
     [SerializeField] private Transform playerTr;
+    private EnemyAI E_AI;
     [SerializeField] private Transform enemyTr;
     [SerializeField] private Transform firePos;
     private readonly int hashFire = Animator.StringToHash("FireTrigger");   // Animator의 FireTrigger이란 이름의 Parameter
@@ -29,9 +30,12 @@ public class EnemyFire : MonoBehaviourPun
 
     void Start()
     {
+        E_AI = GetComponent<EnemyAI>();
+
         enemyFireClip = Resources.Load<AudioClip>("Audio/p_m4_1");
         animator = GetComponent<Animator>();
-        playerTr = GameObject.FindGameObjectWithTag("Player").transform;
+        if (E_AI != null)
+            playerTr = E_AI.playerTr;
         enemyTr = GetComponent<Transform>();
         firePos = transform.GetChild(4).GetChild(0).GetChild(0).transform;
         curBullet = maxBullet;
@@ -43,17 +47,22 @@ public class EnemyFire : MonoBehaviourPun
 
     void Update()
     {
+        if (E_AI != null)
+            playerTr = E_AI.playerTr;
         if (isFire && !GameManager.instance.isGameOver)
         {
-            if (Time.time >= nextFire && PhotonNetwork.IsMasterClient)
+            if (playerTr != null)
             {
-                photonView.RPC("Fire_F", RpcTarget.All);
-                nextFire = Time.time + fireRate + Random.Range(0.0f, 0.3f);
+                if (Time.time >= nextFire && PhotonNetwork.IsMasterClient)
+                {
+                    photonView.RPC("Fire_F", RpcTarget.All);
+                    nextFire = Time.time + fireRate + Random.Range(0.0f, 0.3f);
+                }
+                Vector3 playerLooknormal = playerTr.position - enemyTr.position;
+                Quaternion rot = Quaternion.LookRotation(playerLooknormal);
+                enemyTr.rotation = Quaternion.Slerp(enemyTr.rotation, rot, damping * Time.deltaTime);
             }
-            Vector3 playerLooknormal = playerTr.position - enemyTr.position;
-            Quaternion rot = Quaternion.LookRotation(playerLooknormal);
-            enemyTr.rotation = Quaternion.Slerp(enemyTr.rotation, rot, damping * Time.deltaTime);
-        }    
+        }
     }
     [PunRPC]
     private void Fire_F()
@@ -70,23 +79,20 @@ public class EnemyFire : MonoBehaviourPun
         else if (curBullet > 0 && !isReload)
         {
             isReload = --curBullet % maxBullet == 0;
-            var bullets = ObjectPoolingManager_script.poolingManager.GetE_BulletPool();   // 비활성화 된 몇 번째 총알 반환
-            if (bullets != null)    // 총알이 다 활성화 되어있으면 작동X
-            {
-                bullets.transform.position = firePos.position;
-                bullets.transform.rotation = firePos.rotation;
-                bullets.SetActive(true);
-                animator.SetTrigger(hashFire);
-                SoundManager.Instance.PlaySound(firePos.position, enemyFireClip);
-                StartCoroutine(ShowMuzzleFlash());
-                yield return new WaitForSeconds(0.1f);
-            }
+
+            PhotonNetwork.InstantiateRoomObject("E_Bullet", firePos.position, firePos.rotation);
+
+            animator.SetTrigger(hashFire);
+            //SoundManager.Instance.PlaySound(firePos.position, enemyFireClip);
+            StartCoroutine(ShowMuzzleFlash());
+            yield return new WaitForSeconds(0.1f);
+
         }
     }
     IEnumerator Reload()
     {
         animator.SetTrigger(hashReload);
-        SoundManager.Instance.PlaySound(transform.position, reloadClip);
+        //SoundManager.Instance.PlaySound(transform.position, reloadClip);
         yield return reloadws;
         curBullet = maxBullet;
     }

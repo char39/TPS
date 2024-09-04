@@ -1,3 +1,4 @@
+using System.Collections;
 using Photon.Pun;
 using UnityEngine;
 
@@ -19,31 +20,46 @@ public class BulletMove : MonoBehaviourPun, IPunObservable
 
     void Start()
     {
-        if (PhotonNetwork.IsMasterClient)
+        if (photonView.IsMine)
         {
             speed = 1000f;
             damage = 25f;
+            rb.AddForce(transform.forward * speed);
+            photonView.RPC("BulletDestory_M", RpcTarget.All);
         }
     }
 
     void Update()
     {
-        if (!PhotonNetwork.IsMasterClient)
+        if (!photonView.IsMine)
         {
             transform.position = Vector3.Lerp(transform.position, curPos, Time.deltaTime * 10.0f);
             transform.rotation = Quaternion.Slerp(transform.rotation, curRot, Time.deltaTime * 10.0f);
         }
     }
 
-    void BulletDisable()
+    [PunRPC]
+    void BulletDestory_M()
     {
-        gameObject.SetActive(false);
+        StartCoroutine(BulletDestroy());
     }
+    IEnumerator BulletDestroy()
+    {
+        yield return new WaitForSeconds(3.0f);
+        trail.Clear();
+        if (photonView.IsMine || PhotonNetwork.IsMasterClient)
+            PhotonNetwork.Destroy(gameObject);
+    }
+
+
+
+
+
+/* 
     private void OnEnable() // 옵젝 켜질 때마다 실행
     {
         if (GameManager.instance != null && GameManager.instance.gameData != null)
             damage = GameManager.instance.gameData.damage;
-        Invoke(nameof(BulletDisable), 3.0f);
         rb.AddForce(transform.forward * speed);
         GameManager.OnItemChange += UpdateSetup;    // 이벤트 등록
     }
@@ -56,7 +72,7 @@ public class BulletMove : MonoBehaviourPun, IPunObservable
         trail.Clear();
         transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
         rb.Sleep();
-    }
+    } */
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {

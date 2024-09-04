@@ -36,8 +36,6 @@ public class ObjectPoolingManager_script : MonoBehaviourPunCallbacks
     void Start()
     {
         if (!PhotonNetwork.IsMasterClient) return;
-        CreateE_BulletPool();
-        CreateEnemyPool();
         FindSpawnPoint();
     }
 
@@ -50,7 +48,6 @@ public class ObjectPoolingManager_script : MonoBehaviourPunCallbacks
         if (spawnPointList.Count > 0)
         {
             StartCoroutine(CreateEnemy());
-            //StartCoroutine(CreateEnemySwat());
         }
     }
     IEnumerator CreateEnemy()
@@ -60,17 +57,10 @@ public class ObjectPoolingManager_script : MonoBehaviourPunCallbacks
             yield return new WaitForSeconds(3.0f);          // 3.0f 초 대기
             if (GameManager.instance.isGameOver)            // 게임오버라면
                 yield break;                                    // while문 탈출
-            foreach (GameObject enemy in enemyPoolList)     
-            {
-                if (!enemy.activeSelf)
-                {
-                    int index = Random.Range(0, spawnPointList.Count);
-                    enemy.transform.position = spawnPointList[index].position;
-                    enemy.transform.rotation = spawnPointList[index].rotation;
-                    enemy.gameObject.SetActive(true);
-                    break;
-                }
-            }
+
+            int index = Random.Range(0, spawnPointList.Count);
+            PhotonNetwork.InstantiateRoomObject("Enemy", spawnPointList[index].position, spawnPointList[index].rotation);
+
         }
     }
     IEnumerator CreateEnemySwat()

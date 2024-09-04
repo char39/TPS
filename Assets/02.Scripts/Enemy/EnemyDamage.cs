@@ -4,7 +4,7 @@ using Photon.Pun;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class EnemyDamage : MonoBehaviourPun
+public class EnemyDamage : MonoBehaviourPun, IPunObservable
 {
     private readonly string bulletTag = "Bullet";
     private GameObject bloodEffect;
@@ -21,6 +21,11 @@ public class EnemyDamage : MonoBehaviourPun
         bloodEffect = Resources.Load<GameObject>("Effects/BulletImpactFleshBigEffects");
     }
 
+    void Update()
+    {
+        UpdateHpUI();
+    }
+
     /* Projectile movement 총알 충돌감지
     void OnCollisionEnter(Collision col)
     {
@@ -34,6 +39,7 @@ public class EnemyDamage : MonoBehaviourPun
         }
     }
     */
+    [PunRPC]
     void Die()
     {
         GetComponent<EnemyAI>().state = EnemyAI.State.DIE;
@@ -41,7 +47,6 @@ public class EnemyDamage : MonoBehaviourPun
     void ExplosionDie()
     {
         hp = 0f;
-        UpdateHpUI();
         GetComponent<EnemyAI>().state = EnemyAI.State.EXPLOSIONDIE;
     }
 
@@ -54,16 +59,21 @@ public class EnemyDamage : MonoBehaviourPun
         Destroy(blood, 0.5f);
     }
     
-    void OnDamage(object[] paramsObj)
+    public void OnDamage(object[] paramsObj)
     {
-        ShowBloodEffect((Vector3)paramsObj[0]);
-        hp -= (float)paramsObj[1];
-        hp = Mathf.Clamp(hp, 0f, 100f);
-        UpdateHpUI();
-        //Debug.Log("" + hp);
-        if (hp <= 0f)
-            Die();
+        photonView.RPC("OnDamage_F", RpcTarget.All, paramsObj);
     }
+
+    [PunRPC]
+    void OnDamage_F(Vector3 hitPosition, float damage)
+    {
+        ShowBloodEffect(hitPosition);
+        hp -= damage;
+        hp = Mathf.Clamp(hp, 0f, 100f);
+        if (hp <= 0f)
+            photonView.RPC("Die", RpcTarget.All);
+    }
+
     void UpdateHpUI()
     {
         hpBar.fillAmount = hp / maxHp;
@@ -74,5 +84,17 @@ public class EnemyDamage : MonoBehaviourPun
             hpBar.color = Color.yellow;
         else
             hpBar.color = Color.green;
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(hp);
+        }
+        else
+        {
+            hp = (float)stream.ReceiveNext();
+        }
     }
 }

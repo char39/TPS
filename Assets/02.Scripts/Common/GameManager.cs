@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class GameManager : MonoBehaviourPunCallbacks
+public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 {
     public static GameManager instance;
     private Camera mainCamera;
@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     CanvasGroup inventoryOpen;
     public Text killText;
     public int killCounts = 0;
+    public int curkillCounts = 0;
     [Header("DataManager")]
     [SerializeField] private DataManager dataManager;
     public GameDataObject gameData;
@@ -60,6 +61,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     void Update()
     {
         GetConnectPlayerCount();
+        KillScoreUpdate();
     }
 
     private void CreatePlayer()
@@ -97,19 +99,6 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
 
     private void AddLogMessage(string msg) => logMessages.Add(msg);
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -218,8 +207,18 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void KillScore()
     {
         ++killCounts;
-        killText.text = $"Kill : <color=#FFAAAA>{killCounts.ToString().PadLeft(2)}</color>";
     }
+
+    public void KillScoreUpdate()
+    {
+        if (PhotonNetwork.IsMasterClient)
+            killText.text = $"Kill : <color=#FFAAAA>{killCounts.ToString().PadLeft(2)}</color>";
+        else
+            killText.text = $"Kill : <color=#FFAAAA>{curkillCounts.ToString().PadLeft(2)}</color>";
+        
+    }
+
+
 
     public IEnumerator CameraShake()
     {
@@ -267,5 +266,17 @@ public class GameManager : MonoBehaviourPunCallbacks
         inventoryOpen.alpha = isOpen ? 1.0f : 0.0f;
         inventoryOpen.interactable = isOpen ? true : false;
         inventoryOpen.blocksRaycasts = isOpen ? true : false;
+    }
+
+    void IPunObservable.OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(killCounts);
+        }
+        else if (stream.IsReading)
+        {
+            curkillCounts = (int)stream.ReceiveNext();
+        }
     }
 }

@@ -845,6 +845,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   state: 0
+  playerTr: {fileID: 0}
   isDie: 0
   curisDie: 0
 --- !u!114 &5835263613863628345

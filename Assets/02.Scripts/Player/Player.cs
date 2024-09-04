@@ -66,7 +66,7 @@ public partial class Player : MonoBehaviourPun, IPunObservable
     private Transform firePos;
     public bool isRun;
 
-    private ParticleSystem muzzFlash;       // 총구 화염 효과
+    //private ParticleSystem muzzFlash;       // 총구 화염 효과
     public AudioClip fireSound;
     public LineRenderer laserLine;
 
@@ -106,8 +106,8 @@ public partial class Player : MonoBehaviourPun, IPunObservable
         currentBullet = maxBullet;
         isRun = false;
 
-        muzzFlash = firePos.GetChild(0).GetComponent<ParticleSystem>();
-        muzzFlash.Stop();
+        //muzzFlash = firePos.GetChild(0).GetComponent<ParticleSystem>();
+        //muzzFlash.Stop();
 
         enemyLayer = LayerMask.NameToLayer("Enemy");    // 레이어 이름을 index 값으로 반환. 유니티에서 index 순서가 바뀌어도 상관무
         barrelLayer = LayerMask.NameToLayer("Barrel");
@@ -123,6 +123,7 @@ public partial class Player : MonoBehaviourPun, IPunObservable
         if (photonView.IsMine)
         {
             PlayerMove_All();
+            //photonView.RPC("PlayerGunFire", RpcTarget.All);
             PlayerGunFire();
         }
         else
@@ -150,8 +151,8 @@ public partial class Player : MonoBehaviourPun, IPunObservable
 
     private void PlayerMove_All()   // 플레이어의 움직이는 모든 것
     {
-        MoveAni();
-        MoveRun();
+        photonView.RPC("MoveRun", RpcTarget.All);
+        photonView.RPC("MoveAni", RpcTarget.All);
         tr.Translate(moveDir * finalMoveSpeed * Time.deltaTime, Space.Self);     // Space.Self 로컬좌표, Space.World 절대좌표
         tr.Rotate(Vector3.up * r * rotSpeed * Time.deltaTime, Space.Self);
 
@@ -223,11 +224,11 @@ public partial class Player : MonoBehaviourPun, IPunObservable
             curv = (float)stream.ReceiveNext();
         }
     }
-
+    //[PunRPC]
     private void PlayerGunFire()
     {
         if (Input.GetMouseButtonUp(0) || !isFire || isRun)
-            muzzFlash.Stop();
+            //muzzFlash.Stop();
         if (Input.GetMouseButton(0) && !isFire && !isRun)
         {
             if (currentBullet <= 0 && !isReload)
@@ -239,7 +240,7 @@ public partial class Player : MonoBehaviourPun, IPunObservable
     /*     private void PLayerGunFireAuto()
         {
             if (!isFire || isRun)
-                muzzFlash.Stop();
+                //muzzFlash.Stop();
             if (isFireAuto && !isFire && !isRun)
             {
                 if (currentBullet <= 0 && !isReload)
@@ -253,7 +254,7 @@ public partial class Player : MonoBehaviourPun, IPunObservable
     {
         currentBullet--;
         isFire = true;
-        muzzFlash.Play();
+        //muzzFlash.Play();
         LazerBeam.instance.PlayerLazerBeam();
         RaycastHit hit; // 광선이 오브젝트에 충돌할 경우 충돌 지점이나 거리 등을 알려주는 광선 구조체
         if (Physics.Raycast(firePos.position, firePos.forward, out hit, 20f))    // 광선을 쐈을 때 반경 안에서 맞았는지 여부
@@ -264,7 +265,12 @@ public partial class Player : MonoBehaviourPun, IPunObservable
                 object[] paramsObj = new object[2];
                 paramsObj[0] = hit.point;       // 첫 번째 배열에 맞은 위치값을 전달
                 paramsObj[1] = 25f;             // 두 번째 배열에 총알 데미지값을 전달
-                hit.collider.gameObject.SendMessage("OnDamage", paramsObj, SendMessageOptions.DontRequireReceiver); // public이 아니어도 호출 가능
+                PhotonView targetPhotonView = hit.collider.gameObject.GetComponent<PhotonView>();
+
+                if (targetPhotonView != null)
+                    targetPhotonView.RPC("OnDamage_F", RpcTarget.All, paramsObj);
+                else
+                    hit.collider.gameObject.SendMessage("OnDamage", paramsObj, SendMessageOptions.DontRequireReceiver);
             }
             if (hit.collider.gameObject.tag == barrelTag)
             {
@@ -302,7 +308,7 @@ public partial class Player : MonoBehaviourPun, IPunObservable
         {
             currentBullet--;
             isFire = true;
-            muzzFlash.Play();
+            //muzzFlash.Play();
             LazerBeam.instance.PlayerLazerBeam();
             RaycastHit hit; // 광선이 오브젝트에 충돌할 경우 충돌 지점이나 거리 등을 알려주는 광선 구조체
             if (Physics.Raycast(firePos.position, firePos.forward, out hit, 20f))    // 광선을 쐈을 때 반경 안에서 맞았는지 여부

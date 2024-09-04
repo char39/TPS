@@ -1866,6 +1866,10 @@ PrefabInstance:
       value: Barrel (3)
       objectReference: {fileID: 0}
     - target: {fileID: 6340548939995291396, guid: 0b49ff53abc8bc04296c938de6657c45, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6340548939995291396, guid: 0b49ff53abc8bc04296c938de6657c45, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 1
       objectReference: {fileID: 0}
@@ -1934,6 +1938,10 @@ PrefabInstance:
     - target: {fileID: 6340548939995291396, guid: 0b49ff53abc8bc04296c938de6657c45, type: 3}
       propertyPath: m_Name
       value: Barrel (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6340548939995291396, guid: 0b49ff53abc8bc04296c938de6657c45, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6340548939995291396, guid: 0b49ff53abc8bc04296c938de6657c45, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -3572,6 +3580,10 @@ PrefabInstance:
       value: Barrel
       objectReference: {fileID: 0}
     - target: {fileID: 6340548939995291396, guid: 0b49ff53abc8bc04296c938de6657c45, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6340548939995291396, guid: 0b49ff53abc8bc04296c938de6657c45, type: 3}
       propertyPath: m_NavMeshLayer
       value: 0
       objectReference: {fileID: 0}
@@ -4351,6 +4363,10 @@ PrefabInstance:
     - target: {fileID: 6340548939995291396, guid: 0b49ff53abc8bc04296c938de6657c45, type: 3}
       propertyPath: m_Name
       value: Barrel (7)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6340548939995291396, guid: 0b49ff53abc8bc04296c938de6657c45, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6340548939995291396, guid: 0b49ff53abc8bc04296c938de6657c45, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -6627,6 +6643,10 @@ PrefabInstance:
       value: Barrel (4)
       objectReference: {fileID: 0}
     - target: {fileID: 6340548939995291396, guid: 0b49ff53abc8bc04296c938de6657c45, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6340548939995291396, guid: 0b49ff53abc8bc04296c938de6657c45, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 1
       objectReference: {fileID: 0}
@@ -7087,6 +7107,10 @@ PrefabInstance:
     - target: {fileID: 6340548939995291396, guid: 0b49ff53abc8bc04296c938de6657c45, type: 3}
       propertyPath: m_Name
       value: Barrel (6)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6340548939995291396, guid: 0b49ff53abc8bc04296c938de6657c45, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6340548939995291396, guid: 0b49ff53abc8bc04296c938de6657c45, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -25502,6 +25526,10 @@ PrefabInstance:
       value: Barrel (2)
       objectReference: {fileID: 0}
     - target: {fileID: 6340548939995291396, guid: 0b49ff53abc8bc04296c938de6657c45, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6340548939995291396, guid: 0b49ff53abc8bc04296c938de6657c45, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 1
       objectReference: {fileID: 0}
@@ -25570,6 +25598,10 @@ PrefabInstance:
     - target: {fileID: 6340548939995291396, guid: 0b49ff53abc8bc04296c938de6657c45, type: 3}
       propertyPath: m_Name
       value: Barrel (8)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6340548939995291396, guid: 0b49ff53abc8bc04296c938de6657c45, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6340548939995291396, guid: 0b49ff53abc8bc04296c938de6657c45, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -26007,6 +26039,10 @@ PrefabInstance:
     - target: {fileID: 6340548939995291396, guid: 0b49ff53abc8bc04296c938de6657c45, type: 3}
       propertyPath: m_Name
       value: Barrel (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6340548939995291396, guid: 0b49ff53abc8bc04296c938de6657c45, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6340548939995291396, guid: 0b49ff53abc8bc04296c938de6657c45, type: 3}
       propertyPath: m_StaticEditorFlags

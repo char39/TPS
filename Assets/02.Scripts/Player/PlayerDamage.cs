@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DataInfo;
+using Photon.Pun;
 
-public class PlayerDamage : MonoBehaviour
+public class PlayerDamage : MonoBehaviourPun
 {
     private readonly string bullet_e_Tag = "E_Bullet";
     private GameObject bloodEffect;
@@ -41,28 +42,56 @@ public class PlayerDamage : MonoBehaviour
         UpdateHp();
     }
 
+    /*     void OnCollisionEnter(Collision col)
+        {
+            if (col.gameObject.CompareTag(bullet_e_Tag))
+            {
+                ShowBloodEffect(col);
+                current_hp -= 1;
+                UpdateHp();
+                if (current_hp <= 0 && !isDie)
+                    PlayerDie(col);
+                StartCoroutine(ShowBloodScreen());
+            }
+        } */
+
     void OnCollisionEnter(Collision col)
     {
         if (col.gameObject.CompareTag(bullet_e_Tag))
         {
-            ShowBloodEffect(col);
-            current_hp -= 1;
-            UpdateHp();
-            if (current_hp <= 0 && !isDie)
-                PlayerDie(col);
-            StartCoroutine(ShowBloodScreen());
+            float damage = 2;
+            Vector3 hitPoint = col.contacts[0].point;
+
+            photonView.RPC("TakeDamage", RpcTarget.All, damage, hitPoint);
         }
     }
 
-    public void PlayerDie(Collision col)
+    [PunRPC]
+    void TakeDamage(float damage, Vector3 hitPoint)
+    {
+        if (photonView.IsMine)
+            TakeDamageLocal(damage, hitPoint);
+    }
+    
+    void TakeDamageLocal(float damage, Vector3 hitPoint)
+    {
+        ShowBloodEffect(hitPoint);
+        current_hp -= (int)damage;
+        UpdateHp();
+        if (current_hp <= 0 && !isDie)
+            PlayerDie(hitPoint);
+        StartCoroutine(ShowBloodScreen());
+    }
+
+    public void PlayerDie(Vector3 hitpoint)
     {
         OnPlayerDie();
     }
 
-    private void ShowBloodEffect(Collision col)
+    private void ShowBloodEffect(Vector3 hitpoint)
     {
-        Vector3 pos = col.contacts[0].point;        // 총알 맞은 위치를 할당
-        Vector3 normal = col.contacts[0].normal;    // 총알 맞은 방향을 할당
+        Vector3 pos = hitpoint;
+        Vector3 normal = hitpoint.normalized;
         Quaternion rot = Quaternion.FromToRotation(-Vector3.forward, normal);
         GameObject blood = Instantiate(bloodEffect, pos, rot);
         Destroy(blood, 0.5f);

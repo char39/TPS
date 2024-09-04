@@ -56,6 +56,13 @@ MonoBehaviour:
   - SyncEnemyState
   - SyncEnemyStateRPC
   - Fire_F
+  - BulletDestory_M
+  - Actions
+  - DestroyBullet
+  - Die
+  - UpdateHpUI
+  - OnDamage_F
+  - TakeDamage
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

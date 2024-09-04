@@ -57,13 +57,16 @@ public class EnemyMoveAgent : MonoBehaviourPun, IPunObservable
         
     }
 
-
-    void Start()
+    void Awake()
     {
         enemyAI = GetComponent<EnemyAI>();
         enemyTr = GetComponent<Transform>();
         agent = GetComponent<NavMeshAgent>();
         rb = GetComponent<Rigidbody>();
+    }
+
+    void Start()
+    {
         agent.autoBraking = false;
         agent.updateRotation = false;   // agent를 이용하여 회전하는 기능을 비활성. 회전이 부드럽지 않기 때문.
         var group = GameObject.Find("WayPointGroup");
@@ -74,16 +77,13 @@ public class EnemyMoveAgent : MonoBehaviourPun, IPunObservable
         }
         nextIndex = Random.Range(0, wayPointList.Count);
         MovewayPoint();
-
-        currentPos = enemyTr.position;
-        currentRot = enemyTr.rotation;
     }
 
     void Update()
     {
         if (GameManager.instance.isGameOver)
             Stop();
-        if (PhotonNetwork.IsConnected)
+        if (photonView.IsMine)
         {
             if (!agent.isStopped && !enemyAI.isDie)   // agent가 움직이고 있다면
             {
@@ -92,11 +92,11 @@ public class EnemyMoveAgent : MonoBehaviourPun, IPunObservable
             }
             if (!_patrolling) return;
             FindWayPoint();
-            if (!photonView.IsMine && currentPos != null && currentRot != null)
-            {
-                enemyTr.position = Vector3.Lerp(enemyTr.position, currentPos, Time.deltaTime * 10.0f);
-                enemyTr.rotation = Quaternion.Slerp(enemyTr.rotation, currentRot, Time.deltaTime * 10.0f);
-            }
+        }
+        else
+        {
+            enemyTr.position = Vector3.Lerp(enemyTr.position, currentPos, Time.deltaTime * 10.0f);
+            enemyTr.rotation = Quaternion.Slerp(enemyTr.rotation, currentRot, Time.deltaTime * 10.0f);
         }
     }
 
