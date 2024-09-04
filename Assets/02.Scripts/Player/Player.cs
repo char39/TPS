@@ -69,7 +69,6 @@ public partial class Player : MonoBehaviourPun, IPunObservable
     private ParticleSystem muzzFlash;       // 총구 화염 효과
     public AudioClip fireSound;
     public LineRenderer laserLine;
-    private LazerBeam lazerBeam;
 
     private readonly string enemyTag = "Enemy";
     private readonly string enemyTag2 = "EnemySwat";
@@ -115,13 +114,6 @@ public partial class Player : MonoBehaviourPun, IPunObservable
         boxLayer = LayerMask.NameToLayer("Boxes");
         layerMask = 1 << enemyLayer | 1 << barrelLayer | 1 << boxLayer;         // 레이어 마스크를 이용해 레이어를 묶어서 사용
 
-        if (muzzFlash != null)
-        {
-            muzzFlash.Stop();
-        }
-
-        // LazerBeam 객체 참조
-        lazerBeam = FindObjectOfType<LazerBeam>();
     }
 
     void Update()

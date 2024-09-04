@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
-public class EnemyFire : MonoBehaviour
+public class EnemyFire : MonoBehaviourPun
 {
     [SerializeField] private AudioClip enemyFireClip;
     [SerializeField] private Animator animator;
@@ -44,9 +45,9 @@ public class EnemyFire : MonoBehaviour
     {
         if (isFire && !GameManager.instance.isGameOver)
         {
-            if (Time.time >= nextFire)
+            if (Time.time >= nextFire && PhotonNetwork.IsMasterClient)
             {
-                StartCoroutine(Fire());
+                photonView.RPC("Fire_F", RpcTarget.All);
                 nextFire = Time.time + fireRate + Random.Range(0.0f, 0.3f);
             }
             Vector3 playerLooknormal = playerTr.position - enemyTr.position;
@@ -54,7 +55,11 @@ public class EnemyFire : MonoBehaviour
             enemyTr.rotation = Quaternion.Slerp(enemyTr.rotation, rot, damping * Time.deltaTime);
         }    
     }
-    
+    [PunRPC]
+    private void Fire_F()
+    {
+        StartCoroutine(Fire());
+    }
     IEnumerator Fire()      // 재장전, 총알 발사 메서드
     {
         if (isReload)

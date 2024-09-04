@@ -1,20 +1,40 @@
+using Photon.Pun;
 using UnityEngine;
 
-public class BulletMove : MonoBehaviour
+public class BulletMove : MonoBehaviourPun, IPunObservable
 {
     private float speed;
     public float damage;
     private Rigidbody rb;
     private TrailRenderer trail;
 
+    private Vector3 curPos;
+    private Quaternion curRot;
+
     void Awake()
     {
-        trail = GetComponent<TrailRenderer>();
-        speed = 1000f;
-        damage = 25f;
         rb = GetComponent<Rigidbody>();
-        //gameObject.SetActive(false);
+        trail = GetComponent<TrailRenderer>();
     }
+
+    void Start()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            speed = 1000f;
+            damage = 25f;
+        }
+    }
+
+    void Update()
+    {
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            transform.position = Vector3.Lerp(transform.position, curPos, Time.deltaTime * 10.0f);
+            transform.rotation = Quaternion.Slerp(transform.rotation, curRot, Time.deltaTime * 10.0f);
+        }
+    }
+
     void BulletDisable()
     {
         gameObject.SetActive(false);
@@ -36,5 +56,19 @@ public class BulletMove : MonoBehaviour
         trail.Clear();
         transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
         rb.Sleep();
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(transform.position);
+            stream.SendNext(transform.rotation);
+        }
+        else
+        {
+            curPos = (Vector3)stream.ReceiveNext();
+            curRot = (Quaternion)stream.ReceiveNext();
+        }
     }
 }

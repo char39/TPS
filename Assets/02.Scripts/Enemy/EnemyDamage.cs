@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class EnemyDamage : MonoBehaviour
+public class EnemyDamage : MonoBehaviourPun
 {
     private readonly string bulletTag = "Bullet";
     private GameObject bloodEffect;

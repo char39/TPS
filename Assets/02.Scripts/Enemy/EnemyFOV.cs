@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class EnemyFOV : MonoBehaviour
 {
+    // 안씀
     public float viewRange = 14.0f;     // 적 캐릭터 추적 가능 거리
     [Range(0, 360)] public float viewAngle = 120f;      // 적 캐릭터 추적 시야각
     [SerializeField] private Transform enemyTr;

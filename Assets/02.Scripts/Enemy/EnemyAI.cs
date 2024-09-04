@@ -15,8 +15,6 @@ public class EnemyAI : MonoBehaviourPun, IPunObservable
     private Transform enemyTr;     // ""
     private Animator animator;
 
-    private EnemyFOV enemyFOV;
-
     private float attackDist = 7.0f;         // 범위에 들면 공격
     private float traceDist = 14.0f;         // 범위에 들면 추적
     public bool isDie = false;              // 사망 여부
@@ -44,7 +42,6 @@ public class EnemyAI : MonoBehaviourPun, IPunObservable
         enemyTr = GetComponent<Transform>();
         enemyFire = GetComponent<EnemyFire>();
         animator = GetComponent<Animator>();
-        enemyFOV = GetComponent<EnemyFOV>();
         waitTime = new WaitForSeconds(0.3f);    // 0.3초 기다리는 값 할당
     }
 
@@ -55,43 +52,9 @@ public class EnemyAI : MonoBehaviourPun, IPunObservable
     {
         waitTime = new WaitForSeconds(0.3f);
         StartCoroutine(CheckState());
-        //gameObject.SetActive(false);
-        
+        if (!photonView.IsMine)
+            gameObject.SetActive(false);
     }
-
-/*     IEnumerator CheckState()
-    {
-        while (!isDie)
-        {
-            yield return waitTime;
-
-            if (PhotonNetwork.IsMasterClient)
-            {
-                CheckStateRPC();
-            }
-        }
-    } */
-
-
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if (stream.IsWriting)
-        {
-            stream.SendNext((int)state);
-            stream.SendNext(isDie);
-        }
-        else
-        {
-            state = (State)stream.ReceiveNext();
-            isDie = (bool)stream.ReceiveNext();
-        }
-    }
-
-
-
-
-
-
 
 
 
@@ -103,7 +66,7 @@ public class EnemyAI : MonoBehaviourPun, IPunObservable
             state = State.PTROL;
             animator.SetFloat(hashOffset, Random.Range(0.1f, 1.0f));
             animator.SetFloat(hashWalkSpeed, Random.Range(1.0f, 2.0f));
-            if (photonView.IsMine)
+            if (PhotonNetwork.IsMasterClient)
                 StartCoroutine(CheckState());
             else
             {
@@ -129,17 +92,15 @@ public class EnemyAI : MonoBehaviourPun, IPunObservable
     IEnumerator CheckState()    // 현재 거리에 따라 열거형 상수 State 값을 지정. 그 뒤 waitTime 만큼 대기.
     {
         yield return new WaitForSeconds(1.0f);  // 옵젝 풀링에 생성시 다른 스크립트의 초기화를 위해 대기
-        if (GameManager.instance.isGameOver)
-            state = State.GAMEOVER;
-        while (!isDie && !GameManager.instance.isGameOver)
+        //if (GameManager.instance.isGameOver)
+        //    state = State.GAMEOVER;
+        while (!isDie/*  && !GameManager.instance.isGameOver */)
         {
             yield return waitTime;
-            if (PhotonNetwork.IsMasterClient)
-                CheckStateRPC();
+            CheckStateRPC();
         }
     }
 
-    [PunRPC]
     void CheckStateRPC()
     {
         if (state == State.DIE || state == State.EXPLOSIONDIE)
@@ -147,12 +108,9 @@ public class EnemyAI : MonoBehaviourPun, IPunObservable
         float dist = (playerTr.position - enemyTr.position).magnitude;
         if (dist <= attackDist)
         {
-            if (enemyFOV.isViewPlayer())
-                state = State.ATTACK;
-            //else
-            //    state = State.TRACE;
+            state = State.ATTACK;
         }
-        else if (enemyFOV.isTracePlayer())
+        else if (dist <= traceDist)
             state = State.TRACE;
         else
             state = State.PTROL;
@@ -160,8 +118,8 @@ public class EnemyAI : MonoBehaviourPun, IPunObservable
 
     IEnumerator Action()        // waitTime 만큼 대기한 후, switch 실행
     {
-        if (GameManager.instance.isGameOver)
-            OnPlayerDie();
+        //if (GameManager.instance.isGameOver)
+        //    OnPlayerDie();
         while (!isDie && !GameManager.instance.isGameOver)
         {
             yield return waitTime;
@@ -222,7 +180,9 @@ public class EnemyAI : MonoBehaviourPun, IPunObservable
         animator.SetTrigger(hashPlayerDie);
     }
 
-/*     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
         {
@@ -231,8 +191,8 @@ public class EnemyAI : MonoBehaviourPun, IPunObservable
         }
         else
         {
-            curState = (State)stream.ReceiveNext();
-            curisDie = (bool)stream.ReceiveNext();
+            state = (State)stream.ReceiveNext();
+            isDie = (bool)stream.ReceiveNext();
         }
-    } */
+    }
 }

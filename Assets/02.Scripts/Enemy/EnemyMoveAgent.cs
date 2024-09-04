@@ -92,7 +92,7 @@ public class EnemyMoveAgent : MonoBehaviourPun, IPunObservable
             }
             if (!_patrolling) return;
             FindWayPoint();
-            if (!photonView.IsMine)
+            if (!photonView.IsMine && currentPos != null && currentRot != null)
             {
                 enemyTr.position = Vector3.Lerp(enemyTr.position, currentPos, Time.deltaTime * 10.0f);
                 enemyTr.rotation = Quaternion.Slerp(enemyTr.rotation, currentRot, Time.deltaTime * 10.0f);
